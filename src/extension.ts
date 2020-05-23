@@ -42,25 +42,28 @@ const registerFormatters = (
           const cwd = workspaceFolder?.uri?.fsPath || backupFolder?.uri.fsPath;
 
           return new Promise<vscode.TextEdit[]>((resolve, reject) => {
-            outputChannel.appendLine(`Starting custom local formatter: ${command}`);
+            outputChannel.appendLine(`Starting formatter: ${command}`);
             const originalDocumentText = document.getText();
 
             const process = exec(command, { cwd }, (error, stdout, stderr) => {
               if (error) {
-                vscode.window.showWarningMessage(`Custom local formatter failed. Check output for more details.`);
                 outputChannel.appendLine(`Formatter failed: ${command}\nStderr:\n${stderr}`);
                 reject(error);
               }
 
               if (originalDocumentText.length > 0 && stdout.length === 0) {
-                vscode.window.showWarningMessage(`Custom local formatter returned nothing - not applying changes.`);
-                reject('No changes returned');
+                outputChannel.appendLine(`Formatter returned nothing - not applying changes.`);
+                resolve([]);
               }
 
               const documentRange = new vscode.Range(
                 document.lineAt(0).range.start,
                 document.lineAt(document.lineCount - 1).rangeIncludingLineBreak.end,
               );
+              outputChannel.appendLine(`Finished running formatter: ${command}`);
+              if (stderr.length > 0) {
+                outputChannel.appendLine(`Possible issues ocurred:\n${stderr}`);
+              }
               resolve([new vscode.TextEdit(documentRange, stdout)]);
             });
 
