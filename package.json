@@ -3,11 +3,11 @@
   "displayName": "Custom Local Formatters",
   "description": "Allows users to register custom local formatters for any language.",
   "publisher": "jkillian",
-	"version": "0.0.1",
-	"repository": {
-		"url": "https://github.com/JKillian/vscode-custom-local-formatters"
-	},
-	"license": "MIT",
+  "version": "0.0.2",
+  "repository": {
+    "url": "https://github.com/JKillian/vscode-custom-local-formatters"
+  },
+  "license": "MIT",
   "engines": {
     "vscode": "^1.45.0"
   },
@@ -39,10 +39,10 @@
                 "default": false
               },
               "languages": {
-								"type": "array",
-								"description": "Array of VSCode language identifiers. See https://code.visualstudio.com/docs/languages/identifiers",
+                "type": "array",
+                "description": "Array of VSCode language identifiers. See https://code.visualstudio.com/docs/languages/identifiers",
                 "items": {
-									"type": "string"
+                  "type": "string"
                 }
               }
             },
@@ -61,7 +61,7 @@
     "lint": "eslint src --ext ts",
     "watch": "tsc -watch -p ./",
     "pretest": "yarn run compile && yarn run lint",
-		"test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",
