@@ -7,6 +7,7 @@
 	"repository": {
 		"url": "https://github.com/JKillian/vscode-custom-local-formatters"
 	},
+	"license": "MIT",
   "engines": {
     "vscode": "^1.45.0"
   },
