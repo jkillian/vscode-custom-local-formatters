@@ -3,7 +3,7 @@
 Allows users to define local formatters with locally defined scripts.
 
 ## Quickstart
-0. Install this extension through the VSCode extensions panel or VSCode extensions store.
+0. Install this extension through the VSCode extensions panel or [VSCode extensions marketplace](https://marketplace.visualstudio.com/items?itemName=jkillian.custom-local-formatters).
 
 1. Define your custom formatting script.
    Scripts will receive the contents of the file to be formatted over STDIN.

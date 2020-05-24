@@ -12,8 +12,14 @@
     "vscode": "^1.45.0"
   },
   "categories": [
-    "Other"
+    "Formatters"
   ],
+  "keywords": ["formatter", "format", "script", "custom", "local"],
+  "icon": "images/logo.png",
+  "galleryBanner": {
+    "color": "#83E4C6",
+    "theme": "dark"
+  },
   "main": "./out/extension.js",
   "activationEvents": [
     "*"
