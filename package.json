@@ -3,7 +3,7 @@
   "displayName": "Custom Local Formatters",
   "description": "Allows users to register custom local formatters for any language.",
   "publisher": "jkillian",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "repository": {
     "url": "https://github.com/JKillian/vscode-custom-local-formatters"
   },
@@ -14,7 +14,13 @@
   "categories": [
     "Formatters"
   ],
-  "keywords": ["formatter", "format", "script", "custom", "local"],
+  "keywords": [
+    "formatter",
+    "format",
+    "script",
+    "custom",
+    "local"
+  ],
   "icon": "images/logo.png",
   "galleryBanner": {
     "color": "#83E4C6",
