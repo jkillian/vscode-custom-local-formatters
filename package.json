@@ -24,7 +24,7 @@
   "icon": "images/logo.png",
   "galleryBanner": {
     "color": "#83E4C6",
-    "theme": "dark"
+    "theme": "light"
   },
   "main": "./out/extension.js",
   "activationEvents": [

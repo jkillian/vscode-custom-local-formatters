@@ -1,6 +1,20 @@
-# custom-local-formatters README
+# VSCode Custom Local Formatters
 
-Allows users to define local formatters with locally defined scripts.
+Lets users add formatters to VSCode that run locally defined scripts.
+
+## Motivation
+
+VSCode's formatter features lets you quickly format code through the Format Document command (`shift+alt+f`)
+or automatically on save with the `editor.formatOnSave` option.
+
+However, the only way to add new formatters to VSCode is by installing an extension.
+If you have custom formatting tools or scripts you want to run, there's no easy way to integrate them with VSCode currently.
+
+This extension solves that problem by providing an easy way to register custom scripts as VSCode formatters.
+Here's an example of a custom python script that sorts imports and reformats code being run on a python file:
+
+![Extension in use](images/exampleUsecase.gif)
+
 
 ## Quickstart
 0. Install this extension through the VSCode extensions panel or [VSCode extensions marketplace](https://marketplace.visualstudio.com/items?itemName=jkillian.custom-local-formatters).
@@ -14,7 +28,7 @@ Allows users to define local formatters with locally defined scripts.
    Valid language identifiers [can be found here](https://code.visualstudio.com/docs/languages/identifiers).
 
    ```json
-     "customLocalFormatters.formatters": [
+     customLocalFormatters.formatters": [
        {
          "command": "python format-yml-files.py",
          "languages": ["yml"]
@@ -23,7 +37,7 @@ Allows users to define local formatters with locally defined scripts.
    ```
 
 3. That's it! Your script is now integrated with VSCode as an official formatter.
-   You can now format your code though the format code command (`shift+alt+f`), enable the `editor.formatOnSave` option, or use the formatter however else VSCode allows.
+   You can now format your code though the Format Document command (`shift+alt+f`), enable the `editor.formatOnSave` option, or use the formatter however else VSCode allows.
 
 ## Extension Settings
 
