@@ -3,7 +3,7 @@
   "displayName": "Custom Local Formatters",
   "description": "Allows users to register custom local formatters for any language.",
   "publisher": "jkillian",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "repository": {
     "url": "https://github.com/JKillian/vscode-custom-local-formatters"
   },
