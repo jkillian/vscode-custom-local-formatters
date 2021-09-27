@@ -60,10 +60,11 @@ const registerFormatters = (
                 document.lineAt(0).range.start,
                 document.lineAt(document.lineCount - 1).rangeIncludingLineBreak.end,
               );
+
               outputChannel.appendLine(`Finished running formatter: ${command}`);
-              if (stderr.length > 0) {
+              if (stderr.length > 0)
                 outputChannel.appendLine(`Possible issues ocurred:\n${stderr}`);
-              }
+
               resolve([new vscode.TextEdit(documentRange, stdout)]);
             });
 
