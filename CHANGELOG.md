@@ -6,6 +6,16 @@ Format based off of [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+## v0.0.6 - 2021-09-27
+
+### Improvments
+- Dependency updates
+
+## v0.0.5 - 2021-09-27
+
+### Improvments
+- Dependency updates
+
 ## v0.0.4 - 2020-05-23
 
 ### Improvments
