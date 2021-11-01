@@ -28,7 +28,7 @@ Here's an example of a custom python script that sorts imports and reformats cod
    Valid language identifiers [can be found here](https://code.visualstudio.com/docs/languages/identifiers).
 
    ```json
-     customLocalFormatters.formatters": [
+     "customLocalFormatters.formatters": [
        {
          "command": "python format-yml-files.py",
          "languages": ["yml"]
