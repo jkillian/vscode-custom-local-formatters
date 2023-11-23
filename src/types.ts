@@ -3,7 +3,9 @@ export type Config = {
 };
 
 export type FormatterConfig = {
-  command: string;
+  command: string | {
+    [platform in NodeJS.Platform | "*"]: string;
+  };
   disabled?: boolean;
   languages: string[];
 };

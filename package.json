@@ -43,8 +43,36 @@
             "description": "A single custom formatter.",
             "properties": {
               "command": {
-                "type": "string",
-                "description": "The command to run. Should accept the code's text through STDIN and output the formatted result through STDOUT"
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "properties": {
+                      "darwin": {"type": "string", "description": "macOS"},
+                      "linux": {"type": "string", "description": "Linux"},
+                      "win32": {"type": "string", "description": "Windows"},
+                      "aix": {"type": "string"},
+                      "freebsd": {"type": "string"},
+                      "openbsd": {"type": "string"},
+                      "sunos": {"type": "string"},
+                      "android": {"type": "string"},
+                      "*": {"type": "string"}
+                    }
+                  }
+                ],
+                "examples": [
+                  "",
+                  {
+                    "win32": "",
+                    "*": ""
+                  }
+                ],
+                "description": "The shell command to run. Should accept the code's text through STDIN and output the formatted result through STDOUT. If an object is passed, the command matching the current platform or otherwise \"*\" is picked."
               },
               "disabled": {
                 "type": "boolean",
@@ -54,8 +82,23 @@
                 "type": "array",
                 "description": "Array of VSCode language identifiers. See https://code.visualstudio.com/docs/languages/identifiers",
                 "items": {
-                  "type": "string"
-                }
+                  "type": "string",
+                  "minLength": 1,
+                  "examples": [
+                    "", "abap", "bat", "bibtex", "clojure", "coffeescript", "c",
+                    "cpp", "csharp", "d", "dockercompose", "css", "cuda-cpp",
+                    "diff", "dockerfile", "fsharp", "git-commit", "git-rebase",
+                    "go", "groovy", "handlebars", "haml", "html", "ini", "java",
+                    "javascript", "javascriptreact", "json", "jsonc", "latex",
+                    "less", "lua", "makefile", "markdown", "objective-c",
+                    "objective-cpp", "perl", "php", "plaintext", "powershell",
+                    "jade", "pug", "python", "r", "razor", "ruby", "rust",
+                    "scss", "sass", "shaderlab", "shellscript", "slim", "sql",
+                    "stylus", "swift", "typescript", "typescriptreact", "tex",
+                    "vb", "vue", "vue-html", "xml", "xsl", "yaml"
+                  ]
+                },
+                "minItems": 1
               }
             },
             "required": [
