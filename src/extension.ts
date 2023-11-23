@@ -30,12 +30,33 @@ const registerFormatters = (
     .map((formatter) => {
       if (formatter.disabled) return;
 
+      if (!formatter.languages) {
+        vscode.window.showErrorMessage("Custom formatter does not have any languages defined");
+        return;
+      }
+
+      let commandTemplate: string;
+      if (typeof formatter.command == "string") {
+        commandTemplate = formatter.command;
+      } else {
+        let platformCommand = formatter.command[process.platform];
+        if (!platformCommand)
+          platformCommand = formatter.command["*"];
+        commandTemplate = platformCommand;
+      }
+
+      if (!commandTemplate) {
+        vscode.window.showWarningMessage("Not registering custom formatter for languages "
+          + JSON.stringify(formatter.languages) + ", because no command is specified for this platform");
+        return;
+      }
+
       return vscode.languages.registerDocumentFormattingEditProvider(formatter.languages, {
         provideDocumentFormattingEdits(document, options) {
-          const command = formatter.command
+          let command = commandTemplate
             .replace(/\${file}/g, document.fileName)
             .replace(/\${insertSpaces}/g, '' + options.insertSpaces)
-            .replace(/\${tabSize}/g, '' + options.tabSize.toString);
+            .replace(/\${tabSize}/g, '' + options.tabSize);
 
           const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
           const backupFolder = vscode.workspace.workspaceFolders?.[0];
