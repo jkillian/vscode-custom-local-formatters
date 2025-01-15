@@ -1,7 +1,5 @@
 import { exec } from 'child_process';
-
 import * as vscode from 'vscode';
-
 import { Config, FormatterConfig } from './types';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -35,7 +33,7 @@ const registerFormatters = (
           const command = formatter.command
             .replace(/\${file}/g, document.fileName)
             .replace(/\${insertSpaces}/g, '' + options.insertSpaces)
-            .replace(/\${tabSize}/g, '' + options.tabSize.toString);
+            .replace(/\${tabSize}/g, '' + options.tabSize.toString());
 
           const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
           const backupFolder = vscode.workspace.workspaceFolders?.[0];
@@ -45,15 +43,35 @@ const registerFormatters = (
             outputChannel.appendLine(`Starting formatter: ${command}`);
             const originalDocumentText = document.getText();
 
-            const process = exec(command, { cwd }, (error, stdout, stderr) => {
-              if (error) {
-                outputChannel.appendLine(`Formatter failed: ${command}\nStderr:\n${stderr}`);
-                reject(error);
+            const process = exec(command, { cwd });
+
+            let stdout = '';
+            let stderr = '';
+
+            process.stdout?.on('data', (chunk) => {
+              stdout += chunk;
+            });
+
+            process.stderr?.on('data', (chunk) => {
+              stderr += chunk;
+            });
+
+            process.on('close', (code, signal) => {
+              if (code !== 0) {
+                const reason = signal ? `terminated by signal ${signal} (likely due to a timeout or external termination)` : `exited with code ${code}`;
+                const message = `Formatter failed: ${command}\nReason: ${reason}`;
+                outputChannel.appendLine(message);
+                if (stderr !== '')
+                  outputChannel.appendLine(`Stderr:\n${stderr}`);
+                vscode.window.showErrorMessage(message);
+                reject(new Error(message));
+                return;
               }
 
               if (originalDocumentText.length > 0 && stdout.length === 0) {
                 outputChannel.appendLine(`Formatter returned nothing - not applying changes.`);
                 resolve([]);
+                return;
               }
 
               const documentRange = new vscode.Range(
@@ -63,9 +81,10 @@ const registerFormatters = (
 
               outputChannel.appendLine(`Finished running formatter: ${command}`);
               if (stderr.length > 0)
-                outputChannel.appendLine(`Possible issues ocurred:\n${stderr}`);
+                outputChannel.appendLine(`Possible issues occurred:\n${stderr}`);
 
               resolve([new vscode.TextEdit(documentRange, stdout)]);
+              return;
             });
 
             process.stdin?.write(originalDocumentText);
@@ -78,4 +97,4 @@ const registerFormatters = (
 };
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
