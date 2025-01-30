@@ -1,13 +1,13 @@
-import { spawn } from 'child_process';
-import * as vscode from 'vscode';
-import { Config, FormatterConfig } from './types';
+import { spawn } from "child_process";
+import * as vscode from "vscode";
+import { Config, FormatterConfig } from "./types";
 
 export function activate(context: vscode.ExtensionContext) {
-  const outputChannel = vscode.window.createOutputChannel('Custom Local Formatters');
+  const outputChannel = vscode.window.createOutputChannel("Custom Local Formatters");
   let disposables: readonly vscode.Disposable[] = [];
 
   vscode.workspace.onDidChangeConfiguration((e) => {
-    if (!e.affectsConfiguration('customLocalFormatters')) return;
+    if (!e.affectsConfiguration("customLocalFormatters")) return;
     disposables.forEach((d) => d.dispose());
     disposables = registerFormatters(getFormatterConfigs(), outputChannel);
   });
@@ -16,8 +16,8 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 const getFormatterConfigs = () => {
-  const config = vscode.workspace.getConfiguration('customLocalFormatters');
-  return config.get<Config['formatters']>('formatters', []);
+  const config = vscode.workspace.getConfiguration("customLocalFormatters");
+  return config.get<Config["formatters"]>("formatters", []);
 };
 
 const registerFormatters = (
@@ -34,18 +34,20 @@ const registerFormatters = (
       }
 
       let commandTemplate: string;
-      if (typeof formatter.command == "string") {
+      if (typeof formatter.command === "string") {
         commandTemplate = formatter.command;
       } else {
         let platformCommand = formatter.command[process.platform];
-        if (!platformCommand)
-          platformCommand = formatter.command["*"];
+        if (!platformCommand) platformCommand = formatter.command["*"];
         commandTemplate = platformCommand;
       }
 
       if (!commandTemplate) {
-        vscode.window.showWarningMessage("Not registering custom formatter for languages "
-          + JSON.stringify(formatter.languages) + ", because no command is specified for this platform");
+        vscode.window.showWarningMessage(
+          "Not registering custom formatter for languages " +
+            JSON.stringify(formatter.languages) +
+            ", because no command is specified for this platform",
+        );
         return;
       }
 
@@ -53,9 +55,9 @@ const registerFormatters = (
         provideDocumentFormattingEdits(document, options) {
           const commandParts = commandTemplate
             .replace(/\${file}/g, document.fileName)
-            .replace(/\${insertSpaces}/g, '' + options.insertSpaces)
-            .replace(/\${tabSize}/g, '' + options.tabSize.toString())
-            .split(' ');
+            .replace(/\${insertSpaces}/g, "" + options.insertSpaces)
+            .replace(/\${tabSize}/g, "" + options.tabSize.toString())
+            .split(" ");
 
           const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
           const backupFolder = vscode.workspace.workspaceFolders?.[0];
@@ -68,24 +70,25 @@ const registerFormatters = (
             const [command, ...args] = commandParts;
             const process = spawn(command, args, { cwd });
 
-            let stdout = '';
-            let stderr = '';
+            let stdout = "";
+            let stderr = "";
 
-            process.stdout.on('data', (chunk) => {
+            process.stdout.on("data", (chunk) => {
               stdout += chunk;
             });
 
-            process.stderr.on('data', (chunk) => {
+            process.stderr.on("data", (chunk) => {
               stderr += chunk;
             });
 
-            process.on('close', (code, signal) => {
+            process.on("close", (code, signal) => {
               if (code !== 0) {
-                const reason = signal ? `terminated by signal ${signal} (likely due to a timeout or external termination)` : `exited with code ${code}`;
+                const reason = signal
+                  ? `terminated by signal ${signal} (likely due to a timeout or external termination)`
+                  : `exited with code ${code}`;
                 const message = `Formatter failed: ${formatter.command}\nReason: ${reason}`;
                 outputChannel.appendLine(message);
-                if (stderr !== '')
-                  outputChannel.appendLine(`Stderr:\n${stderr}`);
+                if (stderr !== "") outputChannel.appendLine(`Stderr:\n${stderr}`);
                 vscode.window.showErrorMessage(message);
                 reject(new Error(message));
                 return;
@@ -120,4 +123,4 @@ const registerFormatters = (
 };
 
 // this method is called when your extension is deactivated
-export function deactivate() { }
+export function deactivate() {}
