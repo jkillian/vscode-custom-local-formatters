@@ -41,6 +41,31 @@ Here's an example of a custom python script that sorts imports and reformats cod
 
 ## Extension Settings
 
+Basic usage is just to set a command and an array of languages it should apply to:
+
+```json
+  "customLocalFormatters.formatters": [
+    {
+      "command": "python format-yml-files.py",
+      "languages": ["yml"]
+    }
+  ]
+```
+
+You can also specify platform-specific commands instead if needed:
+
+```json
+  "customLocalFormatters.formatters": [
+    {
+      "command": {
+        "darwin": "gshuf",
+        "*": "shuf"
+      },
+      "languages": ["yml"]
+    }
+  ]
+```
+
 Full extension configuration schema and documentation can be found in the [`package.json`](package.json) file.
 
 ## Known Limitations
