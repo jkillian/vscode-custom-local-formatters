@@ -28,9 +28,30 @@ const registerFormatters = (
     .map((formatter) => {
       if (formatter.disabled) return;
 
+      if (!formatter.languages) {
+        vscode.window.showErrorMessage("Custom formatter does not have any languages defined");
+        return;
+      }
+
+      let commandTemplate: string;
+      if (typeof formatter.command == "string") {
+        commandTemplate = formatter.command;
+      } else {
+        let platformCommand = formatter.command[process.platform];
+        if (!platformCommand)
+          platformCommand = formatter.command["*"];
+        commandTemplate = platformCommand;
+      }
+
+      if (!commandTemplate) {
+        vscode.window.showWarningMessage("Not registering custom formatter for languages "
+          + JSON.stringify(formatter.languages) + ", because no command is specified for this platform");
+        return;
+      }
+
       return vscode.languages.registerDocumentFormattingEditProvider(formatter.languages, {
         provideDocumentFormattingEdits(document, options) {
-          const commandParts = formatter.command
+          const commandParts = commandTemplate
             .replace(/\${file}/g, document.fileName)
             .replace(/\${insertSpaces}/g, '' + options.insertSpaces)
             .replace(/\${tabSize}/g, '' + options.tabSize.toString())
