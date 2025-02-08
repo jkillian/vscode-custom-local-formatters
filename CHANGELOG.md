@@ -6,6 +6,11 @@ Format based off of [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+## v0.1.1 - 2025-02-08
+
+### Fixed
+- #26 - Changed process execution to use a shell to allow more flexibility and better match v0.0.6 behavior. Thanks @lmerynda!
+
 ## v0.1.0 - 2025-01-29
 
 ### Added
