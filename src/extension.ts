@@ -53,11 +53,10 @@ const registerFormatters = (
 
       return vscode.languages.registerDocumentFormattingEditProvider(formatter.languages, {
         provideDocumentFormattingEdits(document, options) {
-          const commandParts = commandTemplate
+          const command = commandTemplate
             .replace(/\${file}/g, document.fileName)
             .replace(/\${insertSpaces}/g, "" + options.insertSpaces)
-            .replace(/\${tabSize}/g, "" + options.tabSize.toString())
-            .split(" ");
+            .replace(/\${tabSize}/g, "" + options.tabSize.toString());
 
           const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
           const backupFolder = vscode.workspace.workspaceFolders?.[0];
@@ -67,8 +66,7 @@ const registerFormatters = (
             outputChannel.appendLine(`Starting formatter: ${formatter.command}`);
             const originalDocumentText = document.getText();
 
-            const [command, ...args] = commandParts;
-            const process = spawn(command, args, { cwd });
+            const process = spawn(command, { cwd, shell: true });
 
             let stdout = "";
             let stderr = "";
