@@ -99,6 +99,11 @@
                 "type": "boolean",
                 "default": false
               },
+							"allowFailures": {
+								"type": "boolean",
+								"default": false,
+								"description": "If set to true, show an alert if the formatting fails."
+							},
               "languages": {
                 "type": "array",
                 "description": "Array of VSCode language identifiers. See https://code.visualstudio.com/docs/languages/identifiers",

@@ -87,7 +87,7 @@ const registerFormatters = (
                 const message = `Formatter failed: ${formatter.command}\nReason: ${reason}`;
                 outputChannel.appendLine(message);
                 if (stderr !== "") outputChannel.appendLine(`Stderr:\n${stderr}`);
-                vscode.window.showErrorMessage(message);
+								if (!formatter.allowFailures) vscode.window.showErrorMessage(message);
                 reject(new Error(message));
                 return;
               }

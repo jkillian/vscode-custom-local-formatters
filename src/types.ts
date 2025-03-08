@@ -10,4 +10,5 @@ export type FormatterConfig = {
       };
   disabled?: boolean;
   languages: string[];
+	allowFailures?: boolean;
 };
