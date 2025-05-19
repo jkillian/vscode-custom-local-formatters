@@ -56,7 +56,7 @@ const registerFormatters = (
           const command = commandTemplate
             .replace(/\${file}/g, document.fileName)
             .replace(/\${insertSpaces}/g, "" + options.insertSpaces)
-            .replace(/\${tabSize}/g, "" + options.tabSize.toString());
+            .replace(/\${tabSize}/g, "" + options.tabSize);
 
           const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
           const backupFolder = vscode.workspace.workspaceFolders?.[0];
