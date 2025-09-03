@@ -84,7 +84,17 @@ const registerFormatters = (
                 const reason = signal
                   ? `terminated by signal ${signal} (likely due to a timeout or external termination)`
                   : `exited with code ${code}`;
-                const message = `Formatter failed: ${formatter.command}\nReason: ${reason}`;
+                const messages = [
+                  `Formatter failed: ${formatter.command}`,
+                  `Reason: ${reason}`
+                ];
+                if (stdout != "") {
+                  messages.push(`stdout: ${stdout}`);
+                }
+                if (stderr != "") {
+                  messages.push(`stderr: ${stderr}`);
+                }
+                const message = messages.join("\n");
                 outputChannel.appendLine(message);
                 if (stderr !== "") outputChannel.appendLine(`Stderr:\n${stderr}`);
                 vscode.window.showErrorMessage(message);
