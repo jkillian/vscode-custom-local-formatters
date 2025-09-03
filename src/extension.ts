@@ -51,8 +51,8 @@ const registerFormatters = (
         return;
       }
 
-      return vscode.languages.registerDocumentFormattingEditProvider(formatter.languages, {
-        provideDocumentFormattingEdits(document, options) {
+      return vscode.languages.registerDocumentRangeFormattingEditProvider(formatter.languages, {
+        provideDocumentRangeFormattingEdits(document, range, options) {
           const command = commandTemplate
             .replace(/\${file}/g, document.fileName)
             .replace(/\${insertSpaces}/g, "" + options.insertSpaces)
@@ -62,9 +62,13 @@ const registerFormatters = (
           const backupFolder = vscode.workspace.workspaceFolders?.[0];
           const cwd = workspaceFolder?.uri?.fsPath || backupFolder?.uri.fsPath;
 
+
           return new Promise<vscode.TextEdit[]>((resolve, reject) => {
             outputChannel.appendLine(`Starting formatter: ${formatter.command}`);
-            const originalDocumentText = document.getText();
+            const originalDocumentText = document.getText(range);
+            if (originalDocumentText.trim().length === 0) {
+              return [];
+            }
 
             const process = spawn(command, { cwd, shell: true });
 
@@ -98,16 +102,11 @@ const registerFormatters = (
                 return;
               }
 
-              const documentRange = new vscode.Range(
-                document.lineAt(0).range.start,
-                document.lineAt(document.lineCount - 1).rangeIncludingLineBreak.end,
-              );
-
               outputChannel.appendLine(`Finished running formatter: ${formatter.command}`);
               if (stderr.length > 0)
                 outputChannel.appendLine(`Possible issues occurred:\n${stderr}`);
 
-              resolve([new vscode.TextEdit(documentRange, stdout)]);
+              resolve([new vscode.TextEdit(range, stdout)]);
               return;
             });
 
