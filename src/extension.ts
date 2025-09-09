@@ -67,6 +67,8 @@ const registerFormatters = (
             const originalDocumentText = document.getText();
 
             const process = spawn(command, { cwd, shell: true });
+            process.stdout.setEncoding('utf8');
+            process.stderr.setEncoding('utf8');
 
             let stdout = "";
             let stderr = "";
