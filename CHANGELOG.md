@@ -61,5 +61,7 @@ Format based off of [Keep a Changelog](http://keepachangelog.com/).
 [p18]: https://github.com/jkillian/vscode-custom-local-formatters/pull/18
 [p19]: https://github.com/jkillian/vscode-custom-local-formatters/pull/19
 [p26]: https://github.com/jkillian/vscode-custom-local-formatters/pull/26
+[p29]: https://github.com/jkillian/vscode-custom-local-formatters/pull/29
+[p30]: https://github.com/jkillian/vscode-custom-local-formatters/pull/20
 [p36]: https://github.com/jkillian/vscode-custom-local-formatters/pull/36
 
