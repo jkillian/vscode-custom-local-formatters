@@ -6,6 +6,15 @@ Format based off of [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+## v0.1.2 - 2025-09-09
+
+### Changed
+- [#36][p36] - Better messages and logging when a formatter fails
+
+### Fixed
+- [#29][p29] - Possibly better handling of unicode and multi-byte characters
+- [#30][p30] - Possibly better handling of passed `tabSize` options
+
 ## v0.1.1 - 2025-02-08
 
 ### Fixed
@@ -52,3 +61,5 @@ Format based off of [Keep a Changelog](http://keepachangelog.com/).
 [p18]: https://github.com/jkillian/vscode-custom-local-formatters/pull/18
 [p19]: https://github.com/jkillian/vscode-custom-local-formatters/pull/19
 [p26]: https://github.com/jkillian/vscode-custom-local-formatters/pull/26
+[p36]: https://github.com/jkillian/vscode-custom-local-formatters/pull/36
+
