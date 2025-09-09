@@ -6,7 +6,7 @@ Format based off of [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
-## v0.1.2 - 2025-09-09
+## v0.1.2 and v0.1.3 - 2025-09-09
 
 ### Changed
 - [#36][p36] - Better messages and logging when a formatter fails
