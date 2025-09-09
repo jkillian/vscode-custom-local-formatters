@@ -88,10 +88,10 @@ const registerFormatters = (
                   `Formatter failed: ${formatter.command}`,
                   `Reason: ${reason}`
                 ];
-                if (stdout != "") {
+                if (stdout !== "") {
                   messages.push(`stdout: ${stdout}`);
                 }
-                if (stderr != "") {
+                if (stderr !== "") {
                   messages.push(`stderr: ${stderr}`);
                 }
                 const message = messages.join("\n");
