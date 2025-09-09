@@ -63,7 +63,7 @@ const registerFormatters = (
           const cwd = workspaceFolder?.uri?.fsPath || backupFolder?.uri.fsPath;
 
           return new Promise<vscode.TextEdit[]>((resolve, reject) => {
-            outputChannel.appendLine(`Starting formatter: ${formatter.command}`);
+            outputChannel.appendLine(`Starting formatter: ${command}`);
             const originalDocumentText = document.getText();
 
             const process = spawn(command, { cwd, shell: true });
@@ -86,10 +86,13 @@ const registerFormatters = (
                 const reason = signal
                   ? `terminated by signal ${signal} (likely due to a timeout or external termination)`
                   : `exited with code ${code}`;
-                const message = `Formatter failed: ${formatter.command}\nReason: ${reason}`;
+                const message = `Formatter failed: ${command}\nReason: ${reason}`;
                 outputChannel.appendLine(message);
                 if (stderr !== "") outputChannel.appendLine(`Stderr:\n${stderr}`);
-                vscode.window.showErrorMessage(message);
+                if (stdout !== "") outputChannel.appendLine(`Stdout:\n${stdout}`);
+                vscode.window.showErrorMessage(message, "Show output").then((selection) => {
+                  if (selection === "Show output") outputChannel.show();
+                });
                 reject(new Error(message));
                 return;
               }
@@ -105,7 +108,7 @@ const registerFormatters = (
                 document.lineAt(document.lineCount - 1).rangeIncludingLineBreak.end,
               );
 
-              outputChannel.appendLine(`Finished running formatter: ${formatter.command}`);
+              outputChannel.appendLine(`Finished running formatter: ${command}`);
               if (stderr.length > 0)
                 outputChannel.appendLine(`Possible issues occurred:\n${stderr}`);
 
