@@ -37,7 +37,7 @@ const formatDocument = (
   const cwd = workspaceFolder?.uri?.fsPath || backupFolder?.uri.fsPath;
 
   return new Promise<vscode.TextEdit[]>((resolve, reject) => {
-    outputChannel.appendLine(`Starting formatter: ${command}`);
+    outputChannel.appendLine(`Started ${range != null ? "range " : ""}formatter: ${command}`);
     
     // Get the text to format - either the range or the entire document
     const textToFormat = range ? document.getText(range) : document.getText();
