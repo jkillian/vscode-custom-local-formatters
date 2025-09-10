@@ -20,6 +20,55 @@ const getFormatterConfigs = () => {
   return config.get<Config["formatters"]>("formatters", []);
 };
 
+const registerFormatters = (
+  formatters: readonly FormatterConfig[],
+  outputChannel: vscode.OutputChannel,
+): readonly vscode.Disposable[] => {
+  return formatters
+    .flatMap((formatter) => {
+      if (formatter.disabled) return [];
+
+      if (!formatter.languages) {
+        vscode.window.showErrorMessage("Custom formatter does not have any languages defined");
+        return [];
+      }
+
+      let commandTemplate: string;
+      if (typeof formatter.command === "string") {
+        commandTemplate = formatter.command;
+      } else {
+        let platformCommand = formatter.command[process.platform];
+        if (!platformCommand) platformCommand = formatter.command["*"];
+        commandTemplate = platformCommand;
+      }
+
+      if (!commandTemplate) {
+        vscode.window.showWarningMessage(
+          "Not registering custom formatter for languages " +
+            JSON.stringify(formatter.languages) +
+            ", because no command is specified for this platform",
+        );
+        return [];
+      }
+
+      return [
+        // Document formatting provider
+        vscode.languages.registerDocumentFormattingEditProvider(formatter.languages, {
+          provideDocumentFormattingEdits(document, options) {
+            return formatDocument(document, options, undefined, commandTemplate, outputChannel);
+          },
+        }),
+        // Range formatting provider
+        vscode.languages.registerDocumentRangeFormattingEditProvider(formatter.languages, {
+          provideDocumentRangeFormattingEdits(document, range, options) {
+            return formatDocument(document, options, range, commandTemplate, outputChannel);
+          },
+        }),
+      ];
+    })
+    .filter((v) => v != null) as vscode.Disposable[];
+};
+
 const formatDocument = (
   document: vscode.TextDocument,
   options: vscode.FormattingOptions,
@@ -94,55 +143,6 @@ const formatDocument = (
     process.stdin.write(textToFormat);
     process.stdin.end();
   });
-};
-
-const registerFormatters = (
-  formatters: readonly FormatterConfig[],
-  outputChannel: vscode.OutputChannel,
-): readonly vscode.Disposable[] => {
-  return formatters
-    .flatMap((formatter) => {
-      if (formatter.disabled) return [];
-
-      if (!formatter.languages) {
-        vscode.window.showErrorMessage("Custom formatter does not have any languages defined");
-        return [];
-      }
-
-      let commandTemplate: string;
-      if (typeof formatter.command === "string") {
-        commandTemplate = formatter.command;
-      } else {
-        let platformCommand = formatter.command[process.platform];
-        if (!platformCommand) platformCommand = formatter.command["*"];
-        commandTemplate = platformCommand;
-      }
-
-      if (!commandTemplate) {
-        vscode.window.showWarningMessage(
-          "Not registering custom formatter for languages " +
-            JSON.stringify(formatter.languages) +
-            ", because no command is specified for this platform",
-        );
-        return [];
-      }
-
-      return [
-        // Document formatting provider
-        vscode.languages.registerDocumentFormattingEditProvider(formatter.languages, {
-          provideDocumentFormattingEdits(document, options) {
-            return formatDocument(document, options, undefined, commandTemplate, outputChannel);
-          },
-        }),
-        // Range formatting provider
-        vscode.languages.registerDocumentRangeFormattingEditProvider(formatter.languages, {
-          provideDocumentRangeFormattingEdits(document, range, options) {
-            return formatDocument(document, options, range, commandTemplate, outputChannel);
-          },
-        }),
-      ];
-    })
-    .filter((v) => v != null) as vscode.Disposable[];
 };
 
 // this method is called when your extension is deactivated
