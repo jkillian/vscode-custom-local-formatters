@@ -6,6 +6,11 @@ Format based off of [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+## v0.2.0 - 2025-09-09
+
+### Added
+- [#37][p37] - Experimental support for range formatting
+
 ## v0.1.2 and v0.1.3 - 2025-09-09
 
 ### Changed
@@ -64,4 +69,4 @@ Format based off of [Keep a Changelog](http://keepachangelog.com/).
 [p29]: https://github.com/jkillian/vscode-custom-local-formatters/pull/29
 [p30]: https://github.com/jkillian/vscode-custom-local-formatters/pull/20
 [p36]: https://github.com/jkillian/vscode-custom-local-formatters/pull/36
-
+[p37]: https://github.com/jkillian/vscode-custom-local-formatters/pull/37
