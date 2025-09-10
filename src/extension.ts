@@ -52,13 +52,11 @@ const registerFormatters = (
       }
 
       return [
-        // Document formatting provider
         vscode.languages.registerDocumentFormattingEditProvider(formatter.languages, {
           provideDocumentFormattingEdits(document, options) {
             return formatDocument(document, options, undefined, commandTemplate, outputChannel);
           },
         }),
-        // Range formatting provider
         vscode.languages.registerDocumentRangeFormattingEditProvider(formatter.languages, {
           provideDocumentRangeFormattingEdits(document, range, options) {
             return formatDocument(document, options, range, commandTemplate, outputChannel);
@@ -88,8 +86,7 @@ const formatDocument = (
   return new Promise<vscode.TextEdit[]>((resolve, reject) => {
     outputChannel.appendLine(`Started ${range != null ? "range " : ""}formatter: ${command}`);
     
-    // Get the text to format - either the range or the entire document
-    const textToFormat = range ? document.getText(range) : document.getText();
+    const textToFormat = document.getText(range);
     const targetRange = range ?? new vscode.Range(
       document.lineAt(0).range.start,
       document.lineAt(document.lineCount - 1).rangeIncludingLineBreak.end,
