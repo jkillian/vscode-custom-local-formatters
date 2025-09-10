@@ -25,12 +25,12 @@ const registerFormatters = (
   outputChannel: vscode.OutputChannel,
 ): readonly vscode.Disposable[] => {
   return formatters
-    .map((formatter) => {
-      if (formatter.disabled) return;
+    .flatMap((formatter) => {
+      if (formatter.disabled) return [];
 
       if (!formatter.languages) {
         vscode.window.showErrorMessage("Custom formatter does not have any languages defined");
-        return;
+        return [];
       }
 
       let commandTemplate: string;
@@ -48,10 +48,10 @@ const registerFormatters = (
             JSON.stringify(formatter.languages) +
             ", because no command is specified for this platform",
         );
-        return;
+        return [];
       }
 
-      return vscode.languages.registerDocumentFormattingEditProvider(formatter.languages, {
+      return [vscode.languages.registerDocumentFormattingEditProvider(formatter.languages, {
         provideDocumentFormattingEdits(document, options) {
           const command = commandTemplate
             .replace(/\${file}/g, document.fileName)
@@ -120,7 +120,7 @@ const registerFormatters = (
             process.stdin.end();
           });
         },
-      });
+      })];
     })
     .filter((v) => v != null) as vscode.Disposable[];
 };
