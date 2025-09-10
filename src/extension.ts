@@ -25,12 +25,12 @@ const registerFormatters = (
   outputChannel: vscode.OutputChannel,
 ): readonly vscode.Disposable[] => {
   return formatters
-    .map((formatter) => {
-      if (formatter.disabled) return;
+    .flatMap((formatter) => {
+      if (formatter.disabled) return [];
 
       if (!formatter.languages) {
         vscode.window.showErrorMessage("Custom formatter does not have any languages defined");
-        return;
+        return [];
       }
 
       let commandTemplate: string;
@@ -48,81 +48,98 @@ const registerFormatters = (
             JSON.stringify(formatter.languages) +
             ", because no command is specified for this platform",
         );
+        return [];
+      }
+
+      return [
+        vscode.languages.registerDocumentFormattingEditProvider(formatter.languages, {
+          provideDocumentFormattingEdits(document, options) {
+            return formatDocument(document, options, undefined, commandTemplate, outputChannel);
+          },
+        }),
+        vscode.languages.registerDocumentRangeFormattingEditProvider(formatter.languages, {
+          provideDocumentRangeFormattingEdits(document, range, options) {
+            return formatDocument(document, options, range, commandTemplate, outputChannel);
+          },
+        }),
+      ];
+    })
+    .filter((v) => v != null) as vscode.Disposable[];
+};
+
+const formatDocument = (
+  document: vscode.TextDocument,
+  options: vscode.FormattingOptions,
+  range: vscode.Range | undefined,
+  commandTemplate: string,
+  outputChannel: vscode.OutputChannel,
+): Promise<vscode.TextEdit[]> => {
+  const command = commandTemplate
+    .replace(/\${file}/g, document.fileName)
+    .replace(/\${insertSpaces}/g, "" + options.insertSpaces)
+    .replace(/\${tabSize}/g, "" + options.tabSize);
+
+  const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
+  const backupFolder = vscode.workspace.workspaceFolders?.[0];
+  const cwd = workspaceFolder?.uri?.fsPath || backupFolder?.uri.fsPath;
+
+  return new Promise<vscode.TextEdit[]>((resolve, reject) => {
+    outputChannel.appendLine(`Started ${range != null ? "range " : ""}formatter: ${command}`);
+    
+    const textToFormat = document.getText(range);
+    const targetRange = range ?? new vscode.Range(
+      document.lineAt(0).range.start,
+      document.lineAt(document.lineCount - 1).rangeIncludingLineBreak.end,
+    );
+
+    const process = spawn(command, { cwd, shell: true });
+    process.stdout.setEncoding("utf8");
+    process.stderr.setEncoding("utf8");
+
+    let stdout = "";
+    let stderr = "";
+
+    process.stdout.on("data", (chunk) => {
+      stdout += chunk;
+    });
+
+    process.stderr.on("data", (chunk) => {
+      stderr += chunk;
+    });
+
+    process.on("close", (code, signal) => {
+      if (code !== 0) {
+        const reason = signal
+          ? `terminated by signal ${signal} (likely due to a timeout or external termination)`
+          : `exited with code ${code}`;
+        const message = `Formatter failed: ${command}\nReason: ${reason}`;
+        outputChannel.appendLine(message);
+        if (stderr !== "") outputChannel.appendLine(`Stderr:\n${stderr}`);
+        if (stdout !== "") outputChannel.appendLine(`Stdout:\n${stdout}`);
+        vscode.window.showErrorMessage(message, "Show output").then((selection) => {
+          if (selection === "Show output") outputChannel.show();
+        });
+        reject(new Error(message));
         return;
       }
 
-      return vscode.languages.registerDocumentFormattingEditProvider(formatter.languages, {
-        provideDocumentFormattingEdits(document, options) {
-          const command = commandTemplate
-            .replace(/\${file}/g, document.fileName)
-            .replace(/\${insertSpaces}/g, "" + options.insertSpaces)
-            .replace(/\${tabSize}/g, "" + options.tabSize);
+      if (textToFormat.length > 0 && stdout.length === 0) {
+        outputChannel.appendLine(`Formatter returned nothing - not applying changes.`);
+        resolve([]);
+        return;
+      }
 
-          const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
-          const backupFolder = vscode.workspace.workspaceFolders?.[0];
-          const cwd = workspaceFolder?.uri?.fsPath || backupFolder?.uri.fsPath;
+      outputChannel.appendLine(`Finished running formatter: ${command}`);
+      if (stderr.length > 0)
+        outputChannel.appendLine(`Possible issues occurred:\n${stderr}`);
 
-          return new Promise<vscode.TextEdit[]>((resolve, reject) => {
-            outputChannel.appendLine(`Starting formatter: ${command}`);
-            const originalDocumentText = document.getText();
+      resolve([new vscode.TextEdit(targetRange, stdout)]);
+      return;
+    });
 
-            const process = spawn(command, { cwd, shell: true });
-            process.stdout.setEncoding("utf8");
-            process.stderr.setEncoding("utf8");
-
-            let stdout = "";
-            let stderr = "";
-
-            process.stdout.on("data", (chunk) => {
-              stdout += chunk;
-            });
-
-            process.stderr.on("data", (chunk) => {
-              stderr += chunk;
-            });
-
-            process.on("close", (code, signal) => {
-              if (code !== 0) {
-                const reason = signal
-                  ? `terminated by signal ${signal} (likely due to a timeout or external termination)`
-                  : `exited with code ${code}`;
-                const message = `Formatter failed: ${command}\nReason: ${reason}`;
-                outputChannel.appendLine(message);
-                if (stderr !== "") outputChannel.appendLine(`Stderr:\n${stderr}`);
-                if (stdout !== "") outputChannel.appendLine(`Stdout:\n${stdout}`);
-                vscode.window.showErrorMessage(message, "Show output").then((selection) => {
-                  if (selection === "Show output") outputChannel.show();
-                });
-                reject(new Error(message));
-                return;
-              }
-
-              if (originalDocumentText.length > 0 && stdout.length === 0) {
-                outputChannel.appendLine(`Formatter returned nothing - not applying changes.`);
-                resolve([]);
-                return;
-              }
-
-              const documentRange = new vscode.Range(
-                document.lineAt(0).range.start,
-                document.lineAt(document.lineCount - 1).rangeIncludingLineBreak.end,
-              );
-
-              outputChannel.appendLine(`Finished running formatter: ${command}`);
-              if (stderr.length > 0)
-                outputChannel.appendLine(`Possible issues occurred:\n${stderr}`);
-
-              resolve([new vscode.TextEdit(documentRange, stdout)]);
-              return;
-            });
-
-            process.stdin.write(originalDocumentText);
-            process.stdin.end();
-          });
-        },
-      });
-    })
-    .filter((v) => v != null) as vscode.Disposable[];
+    process.stdin.write(textToFormat);
+    process.stdin.end();
+  });
 };
 
 // this method is called when your extension is deactivated
