@@ -93,7 +93,7 @@
                     "*": ""
                   }
                 ],
-                "description": "The shell command to run. Should accept the code's text through STDIN and output the formatted result through STDOUT. If an object is passed, the command matching the current platform or otherwise \"*\" is picked."
+                "description": "The shell command to run. Should accept the code's text through STDIN and output the formatted result through STDOUT. If an object is passed, the command matching the current platform or otherwise \"*\" is picked. Supports the following variable substitutions: ${file} or ${buffer_path} — the absolute path of the file being formatted (shell-escaped); ${workspaceFolder} — the workspace root path (shell-escaped); ${insertSpaces} — true or false; ${tabSize} — the configured tab size."
               },
               "disabled": {
                 "type": "boolean",
@@ -186,6 +186,7 @@
   },
   "scripts": {
     "vscode:prepublish": "yarn run compile",
+    "package": "vsce package --yarn",
     "compile": "tsc -p ./",
     "lint": "eslint src --ext ts",
     "format": "prettier --write '**/*.ts'",
@@ -205,5 +206,9 @@
     "prettier": "3.6.2",
     "typescript": "^5.9.2",
     "vsce": "^1.100.0"
+  },
+  "volta": {
+    "node": "22.22.3",
+    "yarn": "1.22.22"
   }
 }

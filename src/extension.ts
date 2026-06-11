@@ -2,6 +2,19 @@ import { spawn } from "child_process";
 import * as vscode from "vscode";
 import { Config, FormatterConfig } from "./types";
 
+/**
+ * Escapes a file-system path for safe interpolation into a shell command string.
+ * On Windows paths are wrapped in double quotes; on POSIX in single quotes.
+ */
+function shellEscapePath(value: string): string {
+  if (process.platform === "win32") {
+    // Escape any embedded double-quotes and wrap the whole thing.
+    return `"${value.replace(/"/g, '\\"')}"`;
+  }
+  // Escape embedded single-quotes (end quote, escaped quote, reopen quote) and wrap.
+  return `'${value.replace(/'/g, "'\\''")}' `;
+}
+
 export function activate(context: vscode.ExtensionContext) {
   const outputChannel = vscode.window.createOutputChannel("Custom Local Formatters");
   let disposables: readonly vscode.Disposable[] = [];
@@ -27,7 +40,6 @@ const registerFormatters = (
   return formatters
     .flatMap((formatter) => {
       if (formatter.disabled) return [];
-
       if (!formatter.languages) {
         vscode.window.showErrorMessage("Custom formatter does not have any languages defined");
         return [];
@@ -74,23 +86,31 @@ const formatDocument = (
   commandTemplate: string,
   outputChannel: vscode.OutputChannel,
 ): Promise<vscode.TextEdit[]> => {
+  const filePath = document.uri.fsPath;
+  const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
+  const backupFolder = vscode.workspace.workspaceFolders?.[0];
+  const workspaceFolderPath = workspaceFolder?.uri?.fsPath ?? backupFolder?.uri.fsPath ?? "";
+  const cwd = workspaceFolderPath || undefined;
+
   const command = commandTemplate
-    .replace(/\${file}/g, document.fileName)
+    // ${file} and ${buffer_path} both expand to the shell-escaped absolute file path
+    .replace(/\${file}/g, shellEscapePath(filePath))
+    .replace(/\${buffer_path}/g, shellEscapePath(filePath))
+    // ${workspaceFolder} expands to the shell-escaped workspace root
+    .replace(/\${workspaceFolder}/g, shellEscapePath(workspaceFolderPath))
     .replace(/\${insertSpaces}/g, "" + options.insertSpaces)
     .replace(/\${tabSize}/g, "" + options.tabSize);
 
-  const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
-  const backupFolder = vscode.workspace.workspaceFolders?.[0];
-  const cwd = workspaceFolder?.uri?.fsPath || backupFolder?.uri.fsPath;
-
   return new Promise<vscode.TextEdit[]>((resolve, reject) => {
     outputChannel.appendLine(`Started ${range != null ? "range " : ""}formatter: ${command}`);
-    
+
     const textToFormat = document.getText(range);
-    const targetRange = range ?? new vscode.Range(
-      document.lineAt(0).range.start,
-      document.lineAt(document.lineCount - 1).rangeIncludingLineBreak.end,
-    );
+    const targetRange =
+      range ??
+      new vscode.Range(
+        document.lineAt(0).range.start,
+        document.lineAt(document.lineCount - 1).rangeIncludingLineBreak.end,
+      );
 
     const process = spawn(command, { cwd, shell: true });
     process.stdout.setEncoding("utf8");
@@ -130,9 +150,7 @@ const formatDocument = (
       }
 
       outputChannel.appendLine(`Finished running formatter: ${command}`);
-      if (stderr.length > 0)
-        outputChannel.appendLine(`Possible issues occurred:\n${stderr}`);
-
+      if (stderr.length > 0) outputChannel.appendLine(`Possible issues occurred:\n${stderr}`);
       resolve([new vscode.TextEdit(targetRange, stdout)]);
       return;
     });
@@ -142,5 +160,4 @@ const formatDocument = (
   });
 };
 
-// this method is called when your extension is deactivated
 export function deactivate() {}
