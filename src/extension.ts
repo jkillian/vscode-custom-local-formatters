@@ -12,10 +12,10 @@ function shellEscapePath(value: string): string {
     return `"${value.replace(/"/g, '\\"')}"`;
   }
   // Escape embedded single-quotes (end quote, escaped quote, reopen quote) and wrap.
-  return `'${value.replace(/'/g, "'\\''")}' `;
+  return `'${value.replace(/'/g, "'\\''")}'`;
 }
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate() {
   const outputChannel = vscode.window.createOutputChannel("Custom Local Formatters");
   let disposables: readonly vscode.Disposable[] = [];
 

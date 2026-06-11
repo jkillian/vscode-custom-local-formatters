@@ -188,10 +188,10 @@
     "vscode:prepublish": "yarn run compile",
     "package": "vsce package --yarn",
     "compile": "tsc -p ./",
-    "lint": "eslint src --ext ts",
-    "format": "prettier --write '**/*.ts'",
+    "lint": "eslint src",
+    "format": "prettier --write \"**/*.ts\"",
     "watch": "tsc -watch -p ./",
-    "pretest": "yarn run compile && yarn run lint && yarn prettier --check src/**/*.ts",
+    "pretest": "yarn run compile && yarn run lint && yarn prettier --check \"src/**/*.ts\"",
     "test": "vscode-test"
   },
   "devDependencies": {

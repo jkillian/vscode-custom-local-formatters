@@ -1,26 +1,28 @@
-import { defineConfig } from "eslint/config";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
+import { defineConfig } from "eslint/config";
 
 export default defineConfig([{
-    plugins: {
-        "@typescript-eslint": typescriptEslint,
-    },
+  files: ["**/*.ts"],
 
-    languageOptions: {
-        parser: tsParser,
-        ecmaVersion: 6,
-        sourceType: "module",
-    },
+  plugins: {
+    "@typescript-eslint": typescriptEslint,
+  },
 
-    rules: {
-        curly: ["warn", "multi-or-nest", "consistent"],
+  languageOptions: {
+    parser: tsParser,
+    ecmaVersion: 6,
+    sourceType: "module",
+  },
 
-        eqeqeq: ["error", "always", {
-            null: "ignore",
-        }],
+  rules: {
+    curly: ["warn", "multi-or-nest", "consistent"],
 
-        "no-throw-literal": "warn",
-        semi: "off",
-    },
+    eqeqeq: ["error", "always", {
+      null: "ignore",
+    }],
+
+    "no-throw-literal": "warn",
+    semi: "off",
+  },
 }]);

@@ -15,25 +15,25 @@ Here's an example of a custom python script that sorts imports and reformats cod
 
 ![Extension in use](images/exampleUsecase.gif)
 
-
 ## Quickstart
+
 0. Install this extension through the VSCode extensions panel or [VSCode extensions marketplace](https://marketplace.visualstudio.com/items?itemName=jkillian.custom-local-formatters).
 
 1. Define your custom formatting script.
    Scripts will receive the contents of the file to be formatted over STDIN.
    They should output the formatted results over STDOUT.
-  
+
 2. Configure the extension to run your script on files of the right type.
    The script will be run with a working directory of the workspace root.
    Valid language identifiers [can be found here](https://code.visualstudio.com/docs/languages/identifiers).
 
    ```json
-     "customLocalFormatters.formatters": [
-       {
-         "command": "python format-yml-files.py",
-         "languages": ["yml"]
-       }
-     ]
+   "customLocalFormatters.formatters": [
+     {
+       "command": "python format-yml-files.py",
+       "languages": ["yml"]
+     }
+   ]
    ```
 
 3. That's it! Your script is now integrated with VSCode as an official formatter.
@@ -44,27 +44,49 @@ Here's an example of a custom python script that sorts imports and reformats cod
 Basic usage is just to set a command and an array of languages it should apply to:
 
 ```json
-  "customLocalFormatters.formatters": [
-    {
-      "command": "python format-yml-files.py",
-      "languages": ["yml"]
-    }
-  ]
+"customLocalFormatters.formatters": [
+  {
+    "command": "python format-yml-files.py",
+    "languages": ["yml"]
+  }
+]
 ```
 
 You can also specify platform-specific commands instead if needed:
 
 ```json
-  "customLocalFormatters.formatters": [
-    {
-      "command": {
-        "darwin": "gshuf",
-        "*": "shuf"
-      },
-      "languages": ["yml"]
-    }
-  ]
+"customLocalFormatters.formatters": [
+  {
+    "command": {
+      "darwin": "gshuf",
+      "*": "shuf"
+    },
+    "languages": ["yml"]
+  }
+]
 ```
+
+### Variable substitutions
+
+Commands support the following variables, expanded before the command runs:
+
+| Variable                     | Expands to                                                |
+| ---------------------------- | --------------------------------------------------------- |
+| `${file}` / `${buffer_path}` | Absolute path of the file being formatted (shell-escaped) |
+| `${workspaceFolder}`         | Workspace root path (shell-escaped)                       |
+| `${insertSpaces}`            | `true` or `false`, from the editor's formatting options   |
+| `${tabSize}`                 | The configured tab size                                   |
+
+```json
+"customLocalFormatters.formatters": [
+  {
+    "command": "prettier --stdin-filepath ${file} --tab-width ${tabSize}",
+    "languages": ["typescript"]
+  }
+]
+```
+
+Path variables are quoted automatically (double quotes on Windows, single quotes elsewhere), so don't add your own quotes around them.
 
 Full extension configuration schema and documentation can be found in the [`package.json`](package.json) file.
 
