@@ -1,3 +1,11 @@
 {
-    "printWidth": 100
+  "$schema": "http://www.schemastore.org/prettierrc.json",
+  "printWidth": 100,
+  "overrides": [
+    {
+      "files": [".vscode/*.json", "tsconfig.json"],
+      "options": { "parser": "jsonc", "trailingComma": "all" }
+    },
+    { "files": [".prettierrc"], "options": { "parser": "json" } }
+  ]
 }

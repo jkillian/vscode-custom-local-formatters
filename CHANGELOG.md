@@ -10,6 +10,8 @@ Format based off of [Keep a Changelog](http://keepachangelog.com/).
 
 - Variable substitutions in commands: `${file}` / `${buffer_path}` (absolute path of the file being
   formatted) and `${workspaceFolder}` (workspace root). Paths are shell-escaped automatically.
+- Unescaped variants `${fileRaw}`, `${bufferPathRaw}`, `${workspaceFolderRaw}` for composing paths
+  into larger tokens. Quoting is up to the user.
 
 ## v0.2.0 - 2025-09-09
 

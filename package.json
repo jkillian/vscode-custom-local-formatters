@@ -93,7 +93,7 @@
                     "*": ""
                   }
                 ],
-                "description": "The shell command to run. Should accept the code's text through STDIN and output the formatted result through STDOUT. If an object is passed, the command matching the current platform or otherwise \"*\" is picked. Supports the following variable substitutions: ${file} or ${buffer_path} — the absolute path of the file being formatted (shell-escaped); ${workspaceFolder} — the workspace root path (shell-escaped); ${insertSpaces} — true or false; ${tabSize} — the configured tab size."
+                "description": "The shell command to run. Should accept the code's text through STDIN and output the formatted result through STDOUT. If an object is passed, the command matching the current platform or otherwise \"*\" is picked. Supports the following variable substitutions: ${file} or ${buffer_path}: the absolute path of the file being formatted (shell-escaped); ${workspaceFolder}: the workspace root path (shell-escaped); ${insertSpaces}: true or false; ${tabSize}: the configured tab size; ${fileRaw}, ${bufferPathRaw}, ${workspaceFolderRaw}: unescaped variants of the path variables, the user is responsible for quoting."
               },
               "disabled": {
                 "type": "boolean",
@@ -101,12 +101,13 @@
               },
               "languages": {
                 "type": "array",
-                "description": "Array of VSCode language identifiers. See https://code.visualstudio.com/docs/languages/identifiers",
+                "description": "Array of VSCode language identifiers. See https://code.visualstudio.com/docs/languages/identifiers. Use \"*\" to register the formatter for all languages.",
                 "items": {
                   "type": "string",
                   "minLength": 1,
                   "examples": [
                     "",
+                    "*",
                     "abap",
                     "bat",
                     "bibtex",
@@ -189,7 +190,7 @@
     "package": "vsce package --yarn",
     "compile": "tsc -p ./",
     "lint": "eslint src",
-    "format": "prettier --write \"**/*.ts\"",
+    "format": "prettier --write .",
     "watch": "tsc -watch -p ./",
     "pretest": "yarn run compile && yarn run lint && yarn prettier --check \"src/**/*.ts\"",
     "test": "vscode-test"
@@ -202,10 +203,10 @@
     "@typescript-eslint/parser": "^8.43.0",
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.9.2",
     "eslint": "^9.35.0",
     "prettier": "3.6.2",
-    "typescript": "^5.9.2",
-    "vsce": "^1.100.0"
+    "typescript": "^5.9.2"
   },
   "volta": {
     "node": "22.22.3",

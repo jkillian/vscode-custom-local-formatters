@@ -98,6 +98,10 @@ const formatDocument = (
     .replace(/\${buffer_path}/g, shellEscapePath(filePath))
     // ${workspaceFolder} expands to the shell-escaped workspace root
     .replace(/\${workspaceFolder}/g, shellEscapePath(workspaceFolderPath))
+    // Raw variants substitute verbatim; the user is responsible for quoting
+    .replace(/\${fileRaw}/g, filePath)
+    .replace(/\${bufferPathRaw}/g, filePath)
+    .replace(/\${workspaceFolderRaw}/g, workspaceFolderPath)
     .replace(/\${insertSpaces}/g, "" + options.insertSpaces)
     .replace(/\${tabSize}/g, "" + options.tabSize);
 

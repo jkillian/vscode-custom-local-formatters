@@ -66,16 +66,32 @@ You can also specify platform-specific commands instead if needed:
 ]
 ```
 
+To register a formatter for every language, use `"*"` as the language:
+
+```json
+"customLocalFormatters.formatters": [
+  {
+    "command": "dprint fmt --stdin ${file}",
+    "languages": ["*"]
+  }
+]
+```
+
+This works well with tools like [dprint](https://dprint.dev/) that decide for themselves how (and whether) to format a file:
+the file path passed via `${file}` lets dprint pick the right plugin and apply your `dprint.json` include/exclude rules.
+
 ### Variable substitutions
 
 Commands support the following variables, expanded before the command runs:
 
-| Variable                     | Expands to                                                |
-| ---------------------------- | --------------------------------------------------------- |
-| `${file}` / `${buffer_path}` | Absolute path of the file being formatted (shell-escaped) |
-| `${workspaceFolder}`         | Workspace root path (shell-escaped)                       |
-| `${insertSpaces}`            | `true` or `false`, from the editor's formatting options   |
-| `${tabSize}`                 | The configured tab size                                   |
+| Variable                          | Expands to                                                |
+| --------------------------------- | --------------------------------------------------------- |
+| `${file}` / `${buffer_path}`      | Absolute path of the file being formatted (shell-escaped) |
+| `${workspaceFolder}`              | Workspace root path (shell-escaped)                       |
+| `${insertSpaces}`                 | `true` or `false`, from the editor's formatting options   |
+| `${tabSize}`                      | The configured tab size                                   |
+| `${fileRaw}` / `${bufferPathRaw}` | Absolute file path, unescaped                             |
+| `${workspaceFolderRaw}`           | Workspace root path, unescaped                            |
 
 ```json
 "customLocalFormatters.formatters": [
@@ -87,6 +103,7 @@ Commands support the following variables, expanded before the command runs:
 ```
 
 Path variables are quoted automatically (double quotes on Windows, single quotes elsewhere), so don't add your own quotes around them.
+The `Raw` variants substitute the path verbatim: use them when composing into a larger token (e.g. `${fileRaw}.bak`) and handle quoting yourself.
 
 Full extension configuration schema and documentation can be found in the [`package.json`](package.json) file.
 
