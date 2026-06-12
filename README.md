@@ -13,7 +13,7 @@ If you have custom formatting tools or scripts you want to run, there's no easy 
 This extension solves that problem by providing an easy way to register custom scripts as VSCode formatters.
 Here's an example of a custom python script that sorts imports and reformats code being run on a python file:
 
-![Extension in use](https://cdn.jsdelivr.net/gh/jkillian/vscode-custom-local-formatters@e9e5d1b5179e42f295aa99ffed8647a0ff1c36a9/images/exampleUsecase.gif)
+![Extension in use](images/exampleUsecase.gif)
 
 ## Quickstart
 

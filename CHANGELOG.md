@@ -19,10 +19,16 @@ Format based off of [Keep a Changelog](http://keepachangelog.com/).
 - `stdin: false` option for tools that only format in place: the document is written to a
   temporary file, the command runs on it, and the result is read back.
 - `timeout` option: kill the formatter after the given number of seconds.
+- `"*"` in `languages` registers the formatter for all languages (now documented in the
+  settings schema and README, with a dprint example).
 
 ### Changed
 
 - Activation switched from `*` to `onStartupFinished`; minimum VS Code version is now 1.47.
+- The settings UI now documents all formatter fields, command variables, and a usage example
+  for `customLocalFormatters.formatters`.
+- Slimmer package (685 KB to 33 KB): the demo gif loads from a CDN instead of being bundled,
+  and a `files` allowlist keeps stray files out of the vsix.
 
 ## v0.2.0 - 2025-09-09
 

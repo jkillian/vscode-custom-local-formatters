@@ -44,6 +44,7 @@
         "customLocalFormatters.formatters": {
           "type": "array",
           "description": "Array of custom formatters",
+          "markdownDescription": "Each entry registers a shell command as a formatter. The command receives the document text on STDIN and returns the formatted result on STDOUT.\n\nFields per formatter: `command` (string or per-platform map), `languages` (language ids, `\"*\"` = all) and/or `pattern` (glob), `cwd`, `env`, `stdin` (set `false` for format-in-place tools), `timeout` (seconds), `disabled`.\n\nCommand variables: `${file}` / `${buffer_path}` and `${workspaceFolder}` (shell-escaped), `${fileRaw}` / `${bufferPathRaw}` / `${workspaceFolderRaw}` (unescaped), `${insertSpaces}`, `${tabSize}`.\n\nExample:\n```json\n[{ \"command\": \"dprint fmt --stdin ${file}\", \"languages\": [\"*\"] }]\n```\n\n[Full documentation](https://github.com/JKillian/vscode-custom-local-formatters#readme)",
           "default": [],
           "items": {
             "type": "object",
@@ -239,7 +240,7 @@
   },
   "scripts": {
     "vscode:prepublish": "yarn run compile",
-    "package": "vsce package --yarn",
+    "package": "vsce package --yarn --no-dependencies --githubBranch master --baseImagesUrl https://cdn.jsdelivr.net/gh/jkillian/vscode-custom-local-formatters@master",
     "compile": "tsc -p ./",
     "lint": "eslint src",
     "format": "prettier --write .",
