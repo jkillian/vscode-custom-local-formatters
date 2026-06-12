@@ -13,7 +13,7 @@ If you have custom formatting tools or scripts you want to run, there's no easy 
 This extension solves that problem by providing an easy way to register custom scripts as VSCode formatters.
 Here's an example of a custom python script that sorts imports and reformats code being run on a python file:
 
-![Extension in use](images/exampleUsecase.gif)
+![Extension in use](https://cdn.jsdelivr.net/gh/jkillian/vscode-custom-local-formatters@e9e5d1b5179e42f295aa99ffed8647a0ff1c36a9/images/exampleUsecase.gif)
 
 ## Quickstart
 
@@ -104,6 +104,30 @@ Commands support the following variables, expanded before the command runs:
 
 Path variables are quoted automatically (double quotes on Windows, single quotes elsewhere), so don't add your own quotes around them.
 The `Raw` variants substitute the path verbatim: use them when composing into a larger token (e.g. `${fileRaw}.bak`) and handle quoting yourself.
+
+### More options
+
+| Option    | Default        | Does                                                                                                                                                                                                             |
+| --------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pattern` | none           | Glob(s) matched against the file path, instead of or in addition to `languages`. With both set, a file must match a language and a pattern. Handy for extensionless files (`"**/Makefile"`).                     |
+| `cwd`     | workspace root | Working directory for the command. Supports `${workspaceFolder}` (unescaped); relative paths resolve against the workspace root.                                                                                 |
+| `env`     | none           | Extra environment variables, merged over the process environment. Values support `${workspaceFolder}` (unescaped).                                                                                               |
+| `stdin`   | `true`         | When `false`, the document text is written to a temporary file, the command runs on it (file path variables point at that file), and the result is read back from the file. For tools that only format in place. |
+| `timeout` | none           | Seconds the formatter may run before being killed.                                                                                                                                                               |
+
+Example: an in-place formatter with a timeout and custom environment:
+
+```json
+"customLocalFormatters.formatters": [
+  {
+    "command": "gofmt -w ${file}",
+    "languages": ["go"],
+    "stdin": false,
+    "timeout": 10,
+    "env": { "GOFLAGS": "-mod=readonly" }
+  }
+]
+```
 
 Full extension configuration schema and documentation can be found in the [`package.json`](package.json) file.
 

@@ -9,7 +9,7 @@
   },
   "license": "MIT",
   "engines": {
-    "vscode": "^1.45.0"
+    "vscode": "^1.47.0"
   },
   "categories": [
     "Formatters"
@@ -27,8 +27,15 @@
     "theme": "light"
   },
   "main": "./out/extension.js",
+  "files": [
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md",
+    "images/logo.png",
+    "out/*.js"
+  ],
   "activationEvents": [
-    "*"
+    "onStartupFinished"
   ],
   "contributes": {
     "configuration": {
@@ -98,6 +105,40 @@
               "disabled": {
                 "type": "boolean",
                 "default": false
+              },
+              "pattern": {
+                "description": "Glob pattern(s) matched against the file path, as an alternative or addition to languages. When both are set, a file must match a language and a pattern. Useful for extensionless files, e.g. \"**/Makefile\".",
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "cwd": {
+                "type": "string",
+                "description": "Working directory the command runs in. Defaults to the workspace root. Supports ${workspaceFolder} (unescaped). Relative paths resolve against the workspace root."
+              },
+              "env": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Extra environment variables for the command, merged over the process environment. Values support ${workspaceFolder} (unescaped)."
+              },
+              "stdin": {
+                "type": "boolean",
+                "default": true,
+                "description": "When true (default), the document text is passed via STDIN and the result is read from STDOUT. When false, the text is written to a temporary file, the command runs on it (file path variables point at that file), and the result is read back from the file. Use for tools that only format in place."
+              },
+              "timeout": {
+                "type": "number",
+                "description": "Number of seconds the formatter may run before it is killed. No timeout when unset."
               },
               "languages": {
                 "type": "array",
@@ -177,8 +218,19 @@
               }
             },
             "required": [
-              "command",
-              "languages"
+              "command"
+            ],
+            "anyOf": [
+              {
+                "required": [
+                  "languages"
+                ]
+              },
+              {
+                "required": [
+                  "pattern"
+                ]
+              }
             ]
           }
         }
@@ -198,7 +250,7 @@
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
-    "@types/vscode": "^1.45.0",
+    "@types/vscode": "^1.47.0",
     "@typescript-eslint/eslint-plugin": "^8.43.0",
     "@typescript-eslint/parser": "^8.43.0",
     "@vscode/test-cli": "^0.0.11",

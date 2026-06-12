@@ -12,6 +12,17 @@ Format based off of [Keep a Changelog](http://keepachangelog.com/).
   formatted) and `${workspaceFolder}` (workspace root). Paths are shell-escaped automatically.
 - Unescaped variants `${fileRaw}`, `${bufferPathRaw}`, `${workspaceFolderRaw}` for composing paths
   into larger tokens. Quoting is up to the user.
+- `pattern` option: register formatters by file path glob(s), instead of or in addition to
+  `languages`. Useful for extensionless files.
+- `cwd` option: set the working directory the command runs in (default: workspace root).
+- `env` option: extra environment variables for the command.
+- `stdin: false` option for tools that only format in place: the document is written to a
+  temporary file, the command runs on it, and the result is read back.
+- `timeout` option: kill the formatter after the given number of seconds.
+
+### Changed
+
+- Activation switched from `*` to `onStartupFinished`; minimum VS Code version is now 1.47.
 
 ## v0.2.0 - 2025-09-09
 
