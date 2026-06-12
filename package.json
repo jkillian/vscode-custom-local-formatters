@@ -9,7 +9,7 @@
   },
   "license": "MIT",
   "engines": {
-    "vscode": "^1.45.0"
+    "vscode": "^1.47.0"
   },
   "categories": [
     "Formatters"
@@ -27,8 +27,15 @@
     "theme": "light"
   },
   "main": "./out/extension.js",
+  "files": [
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md",
+    "images/logo.png",
+    "out/*.js"
+  ],
   "activationEvents": [
-    "*"
+    "onStartupFinished"
   ],
   "contributes": {
     "configuration": {
@@ -37,6 +44,7 @@
         "customLocalFormatters.formatters": {
           "type": "array",
           "description": "Array of custom formatters",
+          "markdownDescription": "Each entry registers a shell command as a formatter. The command receives the document text on STDIN and returns the formatted result on STDOUT.\n\nFields per formatter: `command` (string or per-platform map), `languages` (language ids, `\"*\"` = all) and/or `pattern` (glob), `cwd`, `env`, `stdin` (set `false` for format-in-place tools), `timeout` (seconds), `disabled`.\n\nCommand variables: `${file}` / `${buffer_path}` and `${workspaceFolder}` (shell-escaped), `${fileRaw}` / `${bufferPathRaw}` / `${workspaceFolderRaw}` (unescaped), `${insertSpaces}`, `${tabSize}`.\n\nExample:\n```json\n[{ \"command\": \"dprint fmt --stdin ${file}\", \"languages\": [\"*\"] }]\n```\n\n[Full documentation](https://github.com/JKillian/vscode-custom-local-formatters#readme)",
           "default": [],
           "items": {
             "type": "object",
@@ -93,20 +101,55 @@
                     "*": ""
                   }
                 ],
-                "description": "The shell command to run. Should accept the code's text through STDIN and output the formatted result through STDOUT. If an object is passed, the command matching the current platform or otherwise \"*\" is picked."
+                "description": "The shell command to run. Should accept the code's text through STDIN and output the formatted result through STDOUT. If an object is passed, the command matching the current platform or otherwise \"*\" is picked. Supports the following variable substitutions: ${file} or ${buffer_path}: the absolute path of the file being formatted (shell-escaped); ${workspaceFolder}: the workspace root path (shell-escaped); ${insertSpaces}: true or false; ${tabSize}: the configured tab size; ${fileRaw}, ${bufferPathRaw}, ${workspaceFolderRaw}: unescaped variants of the path variables, the user is responsible for quoting."
               },
               "disabled": {
                 "type": "boolean",
                 "default": false
               },
+              "pattern": {
+                "description": "Glob pattern(s) matched against the file path, as an alternative or addition to languages. When both are set, a file must match a language and a pattern. Useful for extensionless files, e.g. \"**/Makefile\".",
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "cwd": {
+                "type": "string",
+                "description": "Working directory the command runs in. Defaults to the workspace root. Supports ${workspaceFolder} (unescaped). Relative paths resolve against the workspace root."
+              },
+              "env": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Extra environment variables for the command, merged over the process environment. Values support ${workspaceFolder} (unescaped)."
+              },
+              "stdin": {
+                "type": "boolean",
+                "default": true,
+                "description": "When true (default), the document text is passed via STDIN and the result is read from STDOUT. When false, the text is written to a temporary file, the command runs on it (file path variables point at that file), and the result is read back from the file. Use for tools that only format in place."
+              },
+              "timeout": {
+                "type": "number",
+                "description": "Number of seconds the formatter may run before it is killed. No timeout when unset."
+              },
               "languages": {
                 "type": "array",
-                "description": "Array of VSCode language identifiers. See https://code.visualstudio.com/docs/languages/identifiers",
+                "description": "Array of VSCode language identifiers. See https://code.visualstudio.com/docs/languages/identifiers. Use \"*\" to register the formatter for all languages.",
                 "items": {
                   "type": "string",
                   "minLength": 1,
                   "examples": [
                     "",
+                    "*",
                     "abap",
                     "bat",
                     "bibtex",
@@ -176,8 +219,19 @@
               }
             },
             "required": [
-              "command",
-              "languages"
+              "command"
+            ],
+            "anyOf": [
+              {
+                "required": [
+                  "languages"
+                ]
+              },
+              {
+                "required": [
+                  "pattern"
+                ]
+              }
             ]
           }
         }
@@ -186,24 +240,29 @@
   },
   "scripts": {
     "vscode:prepublish": "yarn run compile",
+    "package": "vsce package --yarn --no-dependencies --githubBranch master --baseImagesUrl https://cdn.jsdelivr.net/gh/jkillian/vscode-custom-local-formatters@master",
     "compile": "tsc -p ./",
-    "lint": "eslint src --ext ts",
-    "format": "prettier --write '**/*.ts'",
+    "lint": "eslint src",
+    "format": "prettier --write .",
     "watch": "tsc -watch -p ./",
-    "pretest": "yarn run compile && yarn run lint && yarn prettier --check src/**/*.ts",
+    "pretest": "yarn run compile && yarn run lint && yarn prettier --check \"src/**/*.ts\"",
     "test": "vscode-test"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
-    "@types/vscode": "^1.45.0",
+    "@types/vscode": "^1.47.0",
     "@typescript-eslint/eslint-plugin": "^8.43.0",
     "@typescript-eslint/parser": "^8.43.0",
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.9.2",
     "eslint": "^9.35.0",
     "prettier": "3.6.2",
-    "typescript": "^5.9.2",
-    "vsce": "^1.100.0"
+    "typescript": "^5.9.2"
+  },
+  "volta": {
+    "node": "22.22.3",
+    "yarn": "1.22.22"
   }
 }

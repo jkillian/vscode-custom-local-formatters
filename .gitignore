@@ -1,4 +1,7 @@
-out
-node_modules
-.vscode-test/
 *.vsix
+.vscode-test/
+build/
+coverage/
+node_modules/
+out/
+tmp/
