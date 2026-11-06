@@ -7,8 +7,7 @@ Format based off of [Keep a Changelog](http://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
-- Workspace Trust support: in untrusted workspaces, formatters defined in user settings keep working,
-  while formatters defined in workspace settings are ignored until the workspace is trusted
+- Explicit Workspace Trust declaration: the extension is disabled in untrusted workspaces
 
 ### Changed
 - Requires VS Code 1.74 or newer

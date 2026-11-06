@@ -37,11 +37,8 @@
   ],
   "capabilities": {
     "untrustedWorkspaces": {
-      "supported": "limited",
-      "description": "Formatter commands defined in workspace settings are only run in trusted workspaces. Formatters defined in user settings continue to work.",
-      "restrictedConfigurations": [
-        "customLocalFormatters.formatters"
-      ]
+      "supported": false,
+      "description": "Formatters run shell commands in the workspace folder, which can execute code from the workspace."
     },
     "virtualWorkspaces": {
       "supported": false,
