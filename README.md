@@ -92,8 +92,7 @@ eg.:
 
 Formatters run shell commands from the workspace folder, and most formatting tools load code or
 config from the project they run in. So this extension is disabled until you
-[trust the workspace](https://code.visualstudio.com/docs/editing/workspaces/workspace-trust),
-including for formatters defined in your user settings.
+[trust the workspace](https://code.visualstudio.com/docs/editing/workspaces/workspace-trust).
 
 ## Known Limitations
 
