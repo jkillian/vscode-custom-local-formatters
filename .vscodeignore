@@ -3,7 +3,12 @@
 out/test/**
 src/**
 .gitignore
+.prettierignore
+.prettierrc
+.yarnrc
+yarn.lock
 **/tsconfig.json
-**/.eslintrc.json
+**/eslint.config.mjs
 **/*.map
 **/*.ts
+**/.vscode-test.*
