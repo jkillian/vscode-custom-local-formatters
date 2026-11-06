@@ -26,6 +26,7 @@ Here's an example of a custom python script that sorts imports and reformats cod
 2. Configure the extension to run your script on files of the right type.
    The script will be run with a working directory of the workspace root.
    Valid language identifiers [can be found here](https://code.visualstudio.com/docs/languages/identifiers).
+   `*` is also a valid identifier, allowing a formatter to be used on any language.
 
    ```json
      "customLocalFormatters.formatters": [
@@ -36,7 +37,7 @@ Here's an example of a custom python script that sorts imports and reformats cod
      ]
    ```
 
-3. That's it! Your script is now integrated with VSCode as an official formatter.
+4. That's it! Your script is now integrated with VSCode as an official formatter.
    You can now format your code though the Format Document command (`shift+alt+f`), enable the `editor.formatOnSave` option, or use the formatter however else VSCode allows.
 
 ## Extension Settings
@@ -67,6 +68,25 @@ You can also specify platform-specific commands instead if needed:
 ```
 
 Full extension configuration schema and documentation can be found in the [`package.json`](package.json) file.
+
+### Variable Substitution
+
+The `command` argument can substitute the following patterns:
+
+- `${file}`: The name of the file being formatted
+- `${insertSpaces}`: `true` if the editor is set to insert spaces, `false` if tabs
+- `${tabSize}`: The width of a tab character, or the number of spaces inserted when pressing tab
+
+eg.:
+
+```json
+"customLocalFormatters.formatters": [
+  { 
+    "command": "treefmt --stdin ${file}",
+    "languages": ["*"]
+  }
+]
+```
 
 ## Known Limitations
 
