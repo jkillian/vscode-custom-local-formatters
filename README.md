@@ -88,6 +88,12 @@ eg.:
 ]
 ```
 
+### Workspace Trust
+
+Because formatters run arbitrary shell commands, formatters defined in a workspace's settings
+are only used once you [trust the workspace](https://code.visualstudio.com/docs/editing/workspaces/workspace-trust).
+Formatters defined in your user settings work in all workspaces.
+
 ## Known Limitations
 
 VSCode doesn't seem to provide a way to name the formatter which an extension creates.

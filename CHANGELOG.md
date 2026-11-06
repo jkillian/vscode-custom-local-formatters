@@ -6,6 +6,16 @@ Format based off of [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+- Workspace Trust support: in untrusted workspaces, formatters defined in user settings keep working,
+  while formatters defined in workspace settings are ignored until the workspace is trusted
+
+### Changed
+- Requires VS Code 1.74 or newer
+- The extension now activates when a file is opened instead of on startup
+- The output channel now uses log levels and timestamps
+- Updated development tooling (`@vscode/vsce`, ESLint flat config, TypeScript, test runner)
+
 ## v0.2.0 - 2025-09-09
 
 ### Added

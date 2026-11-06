@@ -5,11 +5,16 @@
   "publisher": "jkillian",
   "version": "0.2.0",
   "repository": {
+    "type": "git",
     "url": "https://github.com/JKillian/vscode-custom-local-formatters"
   },
+  "bugs": {
+    "url": "https://github.com/JKillian/vscode-custom-local-formatters/issues"
+  },
+  "homepage": "https://github.com/JKillian/vscode-custom-local-formatters#readme",
   "license": "MIT",
   "engines": {
-    "vscode": "^1.45.0"
+    "vscode": "^1.74.0"
   },
   "categories": [
     "Formatters"
@@ -28,8 +33,21 @@
   },
   "main": "./out/extension.js",
   "activationEvents": [
-    "*"
+    "onLanguage"
   ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "Formatter commands defined in workspace settings are only run in trusted workspaces. Formatters defined in user settings continue to work.",
+      "restrictedConfigurations": [
+        "customLocalFormatters.formatters"
+      ]
+    },
+    "virtualWorkspaces": {
+      "supported": false,
+      "description": "Formatters run as local shell commands and need access to files on disk."
+    }
+  },
   "contributes": {
     "configuration": {
       "title": "Custom Local Formatters",
@@ -93,15 +111,16 @@
                     "*": ""
                   }
                 ],
-                "description": "The shell command to run. Should accept the code's text through STDIN and output the formatted result through STDOUT. If an object is passed, the command matching the current platform or otherwise \"*\" is picked."
+                "markdownDescription": "The shell command to run. Should accept the code's text through STDIN and output the formatted result through STDOUT. If an object is passed, the command matching the current platform or otherwise `*` is picked.\n\nSupports the `${file}`, `${insertSpaces}`, and `${tabSize}` variables."
               },
               "disabled": {
                 "type": "boolean",
-                "default": false
+                "default": false,
+                "description": "Set to true to stop registering this formatter without removing it."
               },
               "languages": {
                 "type": "array",
-                "description": "Array of VSCode language identifiers. See https://code.visualstudio.com/docs/languages/identifiers",
+                "markdownDescription": "Array of [VS Code language identifiers](https://code.visualstudio.com/docs/languages/identifiers). Use `*` to match any language.",
                 "items": {
                   "type": "string",
                   "minLength": 1,
@@ -187,23 +206,25 @@
   "scripts": {
     "vscode:prepublish": "yarn run compile",
     "compile": "tsc -p ./",
-    "lint": "eslint src --ext ts",
-    "format": "prettier --write '**/*.ts'",
     "watch": "tsc -watch -p ./",
-    "pretest": "yarn run compile && yarn run lint && yarn prettier --check src/**/*.ts",
-    "test": "vscode-test"
+    "lint": "eslint src",
+    "format": "prettier --write 'src/**/*.ts'",
+    "format:check": "prettier --check 'src/**/*.ts'",
+    "pretest": "yarn run compile && yarn run lint && yarn run format:check",
+    "test": "vscode-test",
+    "package": "vsce package",
+    "publish": "vsce publish"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
-    "@types/vscode": "^1.45.0",
-    "@typescript-eslint/eslint-plugin": "^8.43.0",
-    "@typescript-eslint/parser": "^8.43.0",
-    "@vscode/test-cli": "^0.0.11",
-    "@vscode/test-electron": "^2.5.2",
-    "eslint": "^9.35.0",
-    "prettier": "3.6.2",
-    "typescript": "^5.9.2",
-    "vsce": "^1.100.0"
+    "@types/vscode": "1.74.0",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.1.0",
+    "@vscode/vsce": "^4.1.0",
+    "eslint": "^10.14.0",
+    "prettier": "3.9.10",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.1"
   }
 }
