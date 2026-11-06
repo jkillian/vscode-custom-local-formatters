@@ -37,11 +37,8 @@
   ],
   "capabilities": {
     "untrustedWorkspaces": {
-      "supported": "limited",
-      "description": "Formatter commands defined in workspace settings are only run in trusted workspaces. Formatters defined in user settings continue to work.",
-      "restrictedConfigurations": [
-        "customLocalFormatters.formatters"
-      ]
+      "supported": false,
+      "description": "Formatters run shell commands in the workspace folder, which can execute code from the workspace."
     },
     "virtualWorkspaces": {
       "supported": false,
@@ -208,8 +205,8 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "lint": "eslint src",
-    "format": "prettier --write 'src/**/*.ts'",
-    "format:check": "prettier --check 'src/**/*.ts'",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
     "pretest": "yarn run compile && yarn run lint && yarn run format:check",
     "test": "vscode-test",
     "package": "vsce package",

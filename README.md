@@ -90,9 +90,9 @@ eg.:
 
 ### Workspace Trust
 
-Because formatters run arbitrary shell commands, formatters defined in a workspace's settings
-are only used once you [trust the workspace](https://code.visualstudio.com/docs/editing/workspaces/workspace-trust).
-Formatters defined in your user settings work in all workspaces.
+Formatters run shell commands from the workspace folder, and most formatting tools load code or
+config from the project they run in. So this extension is disabled until you
+[trust the workspace](https://code.visualstudio.com/docs/editing/workspaces/workspace-trust).
 
 ## Known Limitations
 
