@@ -6,8 +6,10 @@ Format based off of [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+## v0.4.0 - 2026-11-07
+
 ### Added
-- `patterns` option to choose the files a formatter applies to with glob patterns, instead of or in addition to `languages`
+- [#55][p55] - `patterns` option to choose the files a formatter applies to with glob patterns, instead of or in addition to `languages`. Thanks @kjanat for the idea!
 
 ## v0.3.0 - 2026-11-05
 
@@ -89,3 +91,4 @@ Format based off of [Keep a Changelog](http://keepachangelog.com/).
 [p40]: https://github.com/jkillian/vscode-custom-local-formatters/pull/40
 [p49]: https://github.com/jkillian/vscode-custom-local-formatters/pull/49
 [p53]: https://github.com/jkillian/vscode-custom-local-formatters/pull/53
+[p55]: https://github.com/jkillian/vscode-custom-local-formatters/pull/55
