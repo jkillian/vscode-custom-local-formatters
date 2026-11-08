@@ -6,6 +6,9 @@ Format based off of [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+- `patterns` option to choose the files a formatter applies to with glob patterns, instead of or in addition to `languages`
+
 ## v0.3.0 - 2026-11-05
 
 ### Added
