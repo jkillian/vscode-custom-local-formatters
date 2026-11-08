@@ -9,5 +9,6 @@ export type FormatterConfig = {
         [platform in NodeJS.Platform | "*"]: string;
       };
   disabled?: boolean;
-  languages: string[];
+  languages?: string[];
+  pattern?: string | string[];
 };

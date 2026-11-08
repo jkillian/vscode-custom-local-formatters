@@ -29,6 +29,19 @@ const getFormatterConfigs = () => {
   return config.get<Config["formatters"]>("formatters", []);
 };
 
+// When both languages and patterns are set, a document must match a language and a pattern.
+const buildSelector = (formatter: FormatterConfig): vscode.DocumentSelector | undefined => {
+  const languages = formatter.languages ?? [];
+  const patterns =
+    typeof formatter.pattern === "string" ? [formatter.pattern] : (formatter.pattern ?? []);
+
+  if (languages.length > 0 && patterns.length > 0)
+    return languages.flatMap((language) => patterns.map((pattern) => ({ language, pattern })));
+  if (languages.length > 0) return languages;
+  if (patterns.length > 0) return patterns.map((pattern) => ({ pattern }));
+  return undefined;
+};
+
 const registerFormatters = (
   formatters: readonly FormatterConfig[],
   outputChannel: vscode.LogOutputChannel,
@@ -36,8 +49,11 @@ const registerFormatters = (
   return formatters.flatMap((formatter) => {
     if (formatter.disabled) return [];
 
-    if (!formatter.languages) {
-      vscode.window.showErrorMessage("Custom formatter does not have any languages defined");
+    const selector = buildSelector(formatter);
+    if (!selector) {
+      vscode.window.showErrorMessage(
+        "Custom formatter does not have any languages or patterns defined",
+      );
       return [];
     }
 
@@ -52,20 +68,20 @@ const registerFormatters = (
 
     if (!commandTemplate) {
       vscode.window.showWarningMessage(
-        "Not registering custom formatter for languages " +
-          JSON.stringify(formatter.languages) +
+        "Not registering custom formatter " +
+          JSON.stringify({ languages: formatter.languages, pattern: formatter.pattern }) +
           ", because no command is specified for this platform",
       );
       return [];
     }
 
     return [
-      vscode.languages.registerDocumentFormattingEditProvider(formatter.languages, {
+      vscode.languages.registerDocumentFormattingEditProvider(selector, {
         provideDocumentFormattingEdits(document, options) {
           return formatDocument(document, options, undefined, commandTemplate, outputChannel);
         },
       }),
-      vscode.languages.registerDocumentRangeFormattingEditProvider(formatter.languages, {
+      vscode.languages.registerDocumentRangeFormattingEditProvider(selector, {
         provideDocumentRangeFormattingEdits(document, range, options) {
           return formatDocument(document, options, range, commandTemplate, outputChannel);
         },

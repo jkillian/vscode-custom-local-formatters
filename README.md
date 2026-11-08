@@ -67,6 +67,24 @@ You can also specify platform-specific commands instead if needed:
   ]
 ```
 
+### Matching Files by Pattern
+
+Instead of (or in addition to) `languages`, you can choose files with a
+[glob pattern](https://code.visualstudio.com/docs/editor/glob-patterns), or an array of them.
+Patterns are matched against the file's absolute path, so start them with `**/`:
+
+```json
+  "customLocalFormatters.formatters": [
+    {
+      "command": "dprint fmt --stdin ${file}",
+      "pattern": ["**/*.json", "**/*.md", "**/*.toml"]
+    }
+  ]
+```
+
+When both `languages` and `pattern` are set, a file must match one of the languages _and_ one of the patterns.
+Unsaved files that have never been written to disk don't match any pattern.
+
 Full extension configuration schema and documentation can be found in the [`package.json`](package.json) file.
 
 ### Variable Substitution
