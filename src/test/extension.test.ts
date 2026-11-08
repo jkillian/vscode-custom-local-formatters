@@ -17,8 +17,8 @@ suite("Custom Local Formatters", () => {
       "formatters",
       [
         { command: caseCommand("toUpperCase"), languages: ["plaintext"] },
-        { command: caseCommand("toLowerCase"), pattern: "**/*.patternonly.ini" },
-        { command: caseCommand("toLowerCase"), languages: ["ini"], pattern: ["**/*.both.*"] },
+        { command: caseCommand("toLowerCase"), patterns: ["**/*.patternonly.ini"] },
+        { command: caseCommand("toLowerCase"), languages: ["ini"], patterns: ["**/*.both.*"] },
       ],
       vscode.ConfigurationTarget.Global,
     );
@@ -75,7 +75,7 @@ suite("Custom Local Formatters", () => {
     assert.strictEqual(document.getText(), "hello\n");
   });
 
-  test("skips documents that match only one of languages and pattern", async () => {
+  test("skips documents that match only one of languages and patterns", async () => {
     const wrongLanguage = await openFile("c.both.log", "HELLO\n");
     assert.strictEqual(wrongLanguage.languageId, "log");
     const wrongPattern = await openFile("d.ini", "HELLO\n");

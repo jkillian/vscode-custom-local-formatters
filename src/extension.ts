@@ -32,8 +32,7 @@ const getFormatterConfigs = () => {
 // When both languages and patterns are set, a document must match a language and a pattern.
 const buildSelector = (formatter: FormatterConfig): vscode.DocumentSelector | undefined => {
   const languages = formatter.languages ?? [];
-  const patterns =
-    typeof formatter.pattern === "string" ? [formatter.pattern] : (formatter.pattern ?? []);
+  const patterns = formatter.patterns ?? [];
 
   if (languages.length > 0 && patterns.length > 0)
     return languages.flatMap((language) => patterns.map((pattern) => ({ language, pattern })));
@@ -69,7 +68,7 @@ const registerFormatters = (
     if (!commandTemplate) {
       vscode.window.showWarningMessage(
         "Not registering custom formatter " +
-          JSON.stringify({ languages: formatter.languages, pattern: formatter.pattern }) +
+          JSON.stringify({ languages: formatter.languages, patterns: formatter.patterns }) +
           ", because no command is specified for this platform",
       );
       return [];

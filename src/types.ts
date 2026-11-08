@@ -10,5 +10,5 @@ export type FormatterConfig = {
       };
   disabled?: boolean;
   languages?: string[];
-  pattern?: string | string[];
+  patterns?: string[];
 };

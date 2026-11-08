@@ -190,29 +190,17 @@
                 },
                 "minItems": 1
               },
-              "pattern": {
-                "oneOf": [
-                  {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    },
-                    "minItems": 1
-                  }
-                ],
-                "examples": [
-                  "**/*.md",
-                  [
-                    "**/*.json",
-                    "**/*.toml"
+              "patterns": {
+                "type": "array",
+                "markdownDescription": "Array of [glob patterns](https://code.visualstudio.com/docs/editor/glob-patterns), matched against the file's absolute path. Start patterns with `**/`, e.g. `**/*.md`. When `languages` is also set, a file must match both a language and a pattern.",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "examples": [
+                    "**/*.md"
                   ]
-                ],
-                "markdownDescription": "A [glob pattern](https://code.visualstudio.com/docs/editor/glob-patterns), or array of them, matched against the file's absolute path. Start patterns with `**/`, e.g. `**/*.md`. When `languages` is also set, a file must match both a language and a pattern."
+                },
+                "minItems": 1
               }
             },
             "required": [
@@ -226,7 +214,7 @@
               },
               {
                 "required": [
-                  "pattern"
+                  "patterns"
                 ]
               }
             ]
