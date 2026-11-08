@@ -18,6 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.workspace.onDidChangeConfiguration((e) => {
       if (e.affectsConfiguration("customLocalFormatters")) reregisterFormatters();
     }),
+    vscode.workspace.onDidChangeWorkspaceFolders(reregisterFormatters),
     { dispose: () => disposables.forEach((d) => d.dispose()) },
   );
 
@@ -29,10 +30,17 @@ const getFormatterConfigs = () => {
   return config.get<Config["formatters"]>("formatters", []);
 };
 
-// When both languages and patterns are set, a document must match a language and a pattern.
+// Patterns are relative to each workspace folder. When both languages and patterns are set,
+// a document must match a language and a pattern.
 const buildSelector = (formatter: FormatterConfig): vscode.DocumentSelector | undefined => {
   const languages = formatter.languages ?? [];
-  const patterns = formatter.patterns ?? [];
+  const patterns = (formatter.patterns ?? []).flatMap((pattern) =>
+    (vscode.workspace.workspaceFolders ?? []).map(
+      (folder) => new vscode.RelativePattern(folder, pattern),
+    ),
+  );
+  // With no workspace folder open, patterns match nothing rather than being ignored.
+  if (formatter.patterns?.length && patterns.length === 0) return [];
 
   if (languages.length > 0 && patterns.length > 0)
     return languages.flatMap((language) => patterns.map((pattern) => ({ language, pattern })));

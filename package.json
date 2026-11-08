@@ -192,12 +192,13 @@
               },
               "patterns": {
                 "type": "array",
-                "markdownDescription": "Array of [glob patterns](https://code.visualstudio.com/docs/editor/glob-patterns), matched against the file's absolute path. Start patterns with `**/`, e.g. `**/*.md`. When `languages` is also set, a file must match both a language and a pattern.",
+                "markdownDescription": "Array of [glob patterns](https://code.visualstudio.com/docs/editor/glob-patterns), matched relative to the workspace folder, e.g. `**/*.md` or `src/**/*.ts`. Files outside the workspace never match. When `languages` is also set, a file must match both a language and a pattern.",
                 "items": {
                   "type": "string",
                   "minLength": 1,
                   "examples": [
-                    "**/*.md"
+                    "**/*.md",
+                    "src/**/*.ts"
                   ]
                 },
                 "minItems": 1

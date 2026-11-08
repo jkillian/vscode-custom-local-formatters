@@ -17,7 +17,7 @@ suite("Custom Local Formatters", () => {
       "formatters",
       [
         { command: caseCommand("toUpperCase"), languages: ["plaintext"] },
-        { command: caseCommand("toLowerCase"), patterns: ["**/*.patternonly.ini"] },
+        { command: caseCommand("toLowerCase"), patterns: ["**/*.patternonly.ini", "nested/*.ini"] },
         { command: caseCommand("toLowerCase"), languages: ["ini"], patterns: ["**/*.both.*"] },
       ],
       vscode.ConfigurationTarget.Global,
@@ -30,10 +30,9 @@ suite("Custom Local Formatters", () => {
     fs.rmSync(tempDir, { recursive: true, force: true });
   });
 
-  const openFile = (name: string, content: string) => {
-    const filePath = path.join(tempDir, name);
-    fs.writeFileSync(filePath, content);
-    return vscode.workspace.openTextDocument(filePath);
+  const openWorkspaceFile = (relativePath: string) => {
+    const folder = vscode.workspace.workspaceFolders![0].uri;
+    return vscode.workspace.openTextDocument(vscode.Uri.joinPath(folder, relativePath));
   };
 
   const format = async (document: vscode.TextDocument) => {
@@ -61,14 +60,29 @@ suite("Custom Local Formatters", () => {
   });
 
   test("formats a document matching a pattern", async () => {
-    const document = await openFile("a.patternonly.ini", "HELLO\n");
+    const document = await openWorkspaceFile("a.patternonly.ini");
 
     assert.ok(await format(document));
     assert.strictEqual(document.getText(), "hello\n");
   });
 
+  test("matches patterns relative to the workspace folder", async () => {
+    const document = await openWorkspaceFile("nested/e.ini");
+
+    assert.ok(await format(document));
+    assert.strictEqual(document.getText(), "hello\n");
+  });
+
+  test("skips files outside the workspace folder", async () => {
+    const filePath = path.join(tempDir, "outside.patternonly.ini");
+    fs.writeFileSync(filePath, "HELLO\n");
+    const document = await vscode.workspace.openTextDocument(filePath);
+
+    assert.strictEqual(await format(document), false);
+  });
+
   test("formats a document matching both a language and a pattern", async () => {
-    const document = await openFile("b.both.ini", "HELLO\n");
+    const document = await openWorkspaceFile("b.both.ini");
     assert.strictEqual(document.languageId, "ini");
 
     assert.ok(await format(document));
@@ -76,9 +90,9 @@ suite("Custom Local Formatters", () => {
   });
 
   test("skips documents that match only one of languages and patterns", async () => {
-    const wrongLanguage = await openFile("c.both.log", "HELLO\n");
+    const wrongLanguage = await openWorkspaceFile("c.both.log");
     assert.strictEqual(wrongLanguage.languageId, "log");
-    const wrongPattern = await openFile("d.ini", "HELLO\n");
+    const wrongPattern = await openWorkspaceFile("d.ini");
     assert.strictEqual(wrongPattern.languageId, "ini");
 
     assert.strictEqual(await format(wrongLanguage), false);

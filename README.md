@@ -69,9 +69,10 @@ You can also specify platform-specific commands instead if needed:
 
 ### Matching Files by Pattern
 
-Instead of (or in addition to) `languages`, you can choose files with a
+Instead of (or in addition to) `languages`, you can choose files with
 [glob patterns](https://code.visualstudio.com/docs/editor/glob-patterns).
-Patterns are matched against the file's absolute path, so start them with `**/`:
+Patterns are matched relative to the workspace folder, so `**/*.md` matches Markdown files anywhere in the workspace
+and `src/**/*.ts` matches TypeScript files under `src`:
 
 ```json
   "customLocalFormatters.formatters": [
@@ -83,7 +84,7 @@ Patterns are matched against the file's absolute path, so start them with `**/`:
 ```
 
 When both `languages` and `patterns` are set, a file must match one of the languages _and_ one of the patterns.
-Unsaved files that have never been written to disk don't match any pattern.
+Files outside the workspace, and untitled files that have never been saved, don't match any pattern.
 
 Full extension configuration schema and documentation can be found in the [`package.json`](package.json) file.
 
