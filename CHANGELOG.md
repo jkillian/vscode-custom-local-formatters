@@ -6,6 +6,10 @@ Format based off of [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+- [#57][p57] - The cursor no longer jumps when formatting files over 100,000 characters: only the changed lines are replaced instead of the whole document
+- [#57][p57] - The formatter process is now stopped when VS Code cancels formatting, e.g. on a format on save timeout
+
 ## v0.4.0 - 2026-11-07
 
 ### Added
@@ -92,3 +96,4 @@ Format based off of [Keep a Changelog](http://keepachangelog.com/).
 [p49]: https://github.com/jkillian/vscode-custom-local-formatters/pull/49
 [p53]: https://github.com/jkillian/vscode-custom-local-formatters/pull/53
 [p55]: https://github.com/jkillian/vscode-custom-local-formatters/pull/55
+[p57]: https://github.com/jkillian/vscode-custom-local-formatters/pull/57
