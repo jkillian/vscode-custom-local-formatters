@@ -84,13 +84,20 @@ const registerFormatters = (
 
     return [
       vscode.languages.registerDocumentFormattingEditProvider(selector, {
-        provideDocumentFormattingEdits(document, options) {
-          return formatDocument(document, options, undefined, commandTemplate, outputChannel);
+        provideDocumentFormattingEdits(document, options, token) {
+          return formatDocument(
+            document,
+            options,
+            undefined,
+            commandTemplate,
+            outputChannel,
+            token,
+          );
         },
       }),
       vscode.languages.registerDocumentRangeFormattingEditProvider(selector, {
-        provideDocumentRangeFormattingEdits(document, range, options) {
-          return formatDocument(document, options, range, commandTemplate, outputChannel);
+        provideDocumentRangeFormattingEdits(document, range, options, token) {
+          return formatDocument(document, options, range, commandTemplate, outputChannel, token);
         },
       }),
     ];
@@ -103,6 +110,7 @@ const formatDocument = (
   range: vscode.Range | undefined,
   commandTemplate: string,
   outputChannel: vscode.LogOutputChannel,
+  token: vscode.CancellationToken,
 ): Promise<vscode.TextEdit[]> => {
   const command = commandTemplate
     .replace(/\${file}/g, document.fileName)
@@ -125,6 +133,7 @@ const formatDocument = (
       );
 
     const process = spawn(command, { cwd, shell: true });
+    const cancellation = token.onCancellationRequested(() => process.kill());
     process.stdout.setEncoding("utf8");
     process.stderr.setEncoding("utf8");
 
@@ -140,6 +149,13 @@ const formatDocument = (
     });
 
     process.on("close", (code, signal) => {
+      cancellation.dispose();
+      if (token.isCancellationRequested) {
+        outputChannel.info(`Cancelled formatter: ${command}`);
+        resolve([]);
+        return;
+      }
+
       if (code !== 0) {
         const reason = signal
           ? `terminated by signal ${signal} (likely due to a timeout or external termination)`
@@ -164,13 +180,55 @@ const formatDocument = (
       outputChannel.info(`Finished running formatter: ${command}`);
       if (stderr.length > 0) outputChannel.warn(`Possible issues occurred:\n${stderr}`);
 
-      resolve([new vscode.TextEdit(targetRange, stdout)]);
+      resolve(minimalEdits(document, targetRange, textToFormat, stdout));
       return;
     });
 
     process.stdin.write(textToFormat);
     process.stdin.end();
   });
+};
+
+// Replaces only the changed lines instead of the whole range. VS Code does not shrink edits of
+// more than 100,000 characters itself and applying such an edit makes the cursor jump.
+export const minimalEdits = (
+  document: vscode.TextDocument,
+  targetRange: vscode.Range,
+  before: string,
+  after: string,
+): vscode.TextEdit[] => {
+  if (before === after) {
+    return [];
+  }
+
+  const limit = Math.min(before.length, after.length);
+
+  let head = 0;
+  while (head < limit && before.charCodeAt(head) === after.charCodeAt(head)) {
+    head++;
+  }
+  // Snap to a line start, so the edit never splits a surrogate pair.
+  head = head === 0 ? 0 : before.lastIndexOf("\n", head - 1) + 1;
+
+  let tail = 0;
+  while (
+    tail < limit - head &&
+    before.charCodeAt(before.length - 1 - tail) === after.charCodeAt(after.length - 1 - tail)
+  ) {
+    tail++;
+  }
+
+  // Same for the unchanged tail: let it begin at a line start.
+  const lineBreak = before.indexOf("\n", before.length - tail - 1);
+  tail = lineBreak === -1 ? 0 : before.length - lineBreak - 1;
+
+  const base = document.offsetAt(targetRange.start);
+  const changed = new vscode.Range(
+    document.positionAt(base + head),
+    document.positionAt(base + before.length - tail),
+  );
+
+  return [vscode.TextEdit.replace(changed, after.slice(head, after.length - tail))];
 };
 
 // this method is called when your extension is deactivated
